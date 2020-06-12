@@ -7,6 +7,7 @@ const {Option} = Select;
 const SystemNameSelect = props => {
 
   const [data, setData] = useState([]);
+  const [systemName, setSystemName] = useState('');
 
   useEffect(() => {
     querySystemName({}).then(response => {
@@ -14,14 +15,24 @@ const SystemNameSelect = props => {
     })
   }, []);
 
+  const selectChanged = selected => {
+    setSystemName(selected);
+    if (props.onChange) {
+      props.onChange(
+        selected,
+      );
+    }
+  };
+
   return (
     <Select
-      value={props.value}
+      value={props.value || systemName}
       allowClear={true}
       placeholder="Select System"
       filterOption={false}
       style={props.width ? {width: props.width} : {width: '100%'}}
       disabled={props.disabled}
+      onChange={selectChanged}
     >
       {data.map(d => (
         <Option value={d.name}>{d.name}-{d.descript}</Option>

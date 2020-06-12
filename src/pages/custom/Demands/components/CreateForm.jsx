@@ -1,15 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Form, Input, Col, Row, DatePicker, Button, Select, Spin} from 'antd';
+import {Modal, Form, Input, DatePicker, Button, Radio} from 'antd';
 import {utcFormat} from "@/pages/comm";
 import SystemUser from "@/pages/modal/SystemUser";
 import * as moment from "moment";
 import Department from "@/pages/modal/Department";
-import {queryList as querySystemName} from "@/pages/modal/SystemName/service";
 import SystemNameSelect from "@/pages/components/SystemNameSelect";
 
 
 const FormItem = Form.Item;
-const {Option} = Select;
 const {TextArea} = Input;
 
 const CreateForm = props => {
@@ -49,7 +47,7 @@ const CreateForm = props => {
         width={modalWidth ? modalWidth : 800}
         onOk={() => {
           form.validateFields().then(fieldsValue => {
-            form.resetFields();
+            // form.resetFields();
             // console.log(fieldsValue);
             const values = {
               ...fieldsValue,
@@ -100,11 +98,30 @@ const CreateForm = props => {
             ]}>
             <TextArea placeholder="需求内容" rows={4}/>
           </FormItem>
+          <FormItem
+            label="紧急度"
+            name="emergencyDegree"
+            rules={[
+              {
+                required: true,
+                message: '请输入紧急度',
+              },
+            ]}>
+            <Radio.Group>
+              <Radio value="1">高</Radio>
+              <Radio value="2">中</Radio>
+              <Radio value="3">低</Radio>
+            </Radio.Group>
+          </FormItem>
           <FormItem label="需求人" style={{marginBottom: 0}}>
             <Input.Group compact={true}>
               <FormItem
                 name="demanderID"
-                rules={[{required: true}]}>
+                rules={[
+                  {
+                    required: true,
+                    message: '请输入需求人',
+                  }]}>
                 <Input placeholder="需求人ID"/>
               </FormItem>
               <FormItem
@@ -122,7 +139,11 @@ const CreateForm = props => {
             <Input.Group compact={true}>
               <FormItem
                 name="demanderDeptID"
-                rules={[{required: true}]}>
+                rules={[
+                  {
+                    required: true,
+                    message: '请输入需求部门',
+                  }]}>
                 <Input placeholder="需求部门ID"/>
               </FormItem>
               <FormItem

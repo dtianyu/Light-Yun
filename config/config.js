@@ -88,6 +88,12 @@ export default defineConfig({
                   path: '/custom/demands',
                   component: './custom/demands',
                 },
+                {
+                  name: 'workplace',
+                  icon: 'smile',
+                  path: '/custom/workplace',
+                  component: './custom/workplace',
+                },
               ],
             },
             {

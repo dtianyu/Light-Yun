@@ -23,6 +23,9 @@ export async function queryList(params) {
     if (params.directorDeptID) {
       f = `${f};directorDeptID=${params.directorDeptID}`;
     }
+    if (params.directorID) {
+      f = `${f};directorID=${params.directorID}`;
+    }
     if (params.directorName) {
       f = `${f};directorName=${params.directorName}`;
     }

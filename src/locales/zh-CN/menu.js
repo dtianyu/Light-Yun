@@ -52,4 +52,5 @@ export default {
   'menu.custom': '学习进度',
   'menu.custom.company': '公司列表',
   'menu.custom.demands': '优化需求',
+  'menu.custom.workplace': '工作任务',
 };

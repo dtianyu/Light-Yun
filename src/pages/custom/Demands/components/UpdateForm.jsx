@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Form, Input, Switch, DatePicker, Button, Select} from 'antd';
+import {Modal, Form, Input, Switch, DatePicker, Button, Radio} from 'antd';
 import {utcFormat} from "@/pages/comm";
 import SystemUser from "@/pages/modal/SystemUser";
 import Department from "@/pages/modal/Department";
@@ -45,7 +45,7 @@ const UpdateForm = props => {
         width={modalWidth ? modalWidth : 800}
         onOk={() => {
           form.validateFields().then(fieldsValue => {
-            form.resetFields();
+            // form.resetFields();
             // console.log(fieldsValue);
             const values = {
               ...fieldsValue,
@@ -107,6 +107,21 @@ const UpdateForm = props => {
               },
             ]}>
             <TextArea placeholder="需求内容" rows={4} disabled={readOnly}/>
+          </FormItem>
+          <FormItem
+            label="紧急度"
+            name="emergencyDegree"
+            rules={[
+              {
+                required: true,
+                message: '请输入紧急度',
+              },
+            ]}>
+            <Radio.Group disabled={readOnly}>
+              <Radio value="1">高</Radio>
+              <Radio value="2">中</Radio>
+              <Radio value="3">低</Radio>
+            </Radio.Group>
           </FormItem>
           <FormItem label="负责人" style={{marginBottom: 0}}>
             <Input.Group compact={true}>

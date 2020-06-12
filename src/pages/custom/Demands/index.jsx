@@ -6,7 +6,7 @@ import ProTable from '@ant-design/pro-table';
 import {queryList, add, update, remove} from './service';
 import CreateForm from './components/CreateForm';
 import UpdateForm from "./components/UpdateForm";
-import {formatDateTime, utcDate} from "@/pages/comm";
+import {utcDate} from "@/pages/comm";
 import * as PropTypes from "prop-types";
 import moment from "moment";
 
@@ -88,6 +88,9 @@ const RowOperation = ({item, operate}) => (
         <Menu.Item key="0">查看</Menu.Item>
         {item.status !== 'V' ? (<Menu.Item key="e">修改</Menu.Item>) : null}
         {item.status !== 'V' ? (<Menu.Item key="d">删除</Menu.Item>) : null}
+        {item.status !== 'W' && item.status !== 'V' ? (<Menu.Item key="c">取消</Menu.Item>) : null}
+        {item.status !== 'S' && item.status !== 'V' ? (<Menu.Item key="s">暂停</Menu.Item>) : null}
+        {item.status !== 'T' && item.status !== 'V' ? (<Menu.Item key="t">测试</Menu.Item>) : null}
         {item.status === 'Y' ? (<Menu.Item key="v">结案</Menu.Item>) : null}
         {item.status === 'V' ? (<Menu.Item key="r">还原</Menu.Item>) : null}
       </Menu>
@@ -104,7 +107,7 @@ RowOperation.propTypes = {
   operate: PropTypes.func.isRequired,
 };
 
-const TableList = () => {
+const Demands = () => {
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
@@ -115,7 +118,7 @@ const TableList = () => {
   const operate = async (key, item) => {
     const value = {...item};
     const {formid} = item;
-
+    let changed;
     switch (key) {
       case '0':
         // read
@@ -150,6 +153,81 @@ const TableList = () => {
           cancelText: '取消',
           onOk: async () => {
             const success = await handleRemove(item.id);
+
+            if (success) {
+              setCurrentObject({});
+
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }
+        });
+        break;
+      case 'c':
+        // cancel
+        changed = {
+          status: 'W',
+          optdate: moment.utc().format(),
+        };
+
+        Modal.confirm({
+          title: '取消',
+          content: `确定取消${formid}吗？`,
+          okText: '确认',
+          cancelText: '取消',
+          onOk: async () => {
+            const success = await handleUpdate({...value, ...changed});
+
+            if (success) {
+              setCurrentObject({});
+
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }
+        });
+        break;
+      case 's':
+        // suspend
+        changed = {
+          status: 'S',
+          optdate: moment.utc().format(),
+        };
+
+        Modal.confirm({
+          title: '暂停',
+          content: `确定暂停${formid}吗？`,
+          okText: '确认',
+          cancelText: '取消',
+          onOk: async () => {
+            const success = await handleUpdate({...value, ...changed});
+
+            if (success) {
+              setCurrentObject({});
+
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }
+        });
+        break;
+      case 't':
+        // test
+        changed = {
+          status: 'T',
+          optdate: moment.utc().format(),
+        };
+
+        Modal.confirm({
+          title: '测试',
+          content: `确定进行${formid}测试吗？`,
+          okText: '确认',
+          cancelText: '取消',
+          onOk: async () => {
+            const success = await handleUpdate({...value, ...changed});
 
             if (success) {
               setCurrentObject({});
@@ -272,6 +350,16 @@ const TableList = () => {
       hideInSearch: true,
     },
     {
+      title: '紧急度',
+      dataIndex: 'emergencyDegree',
+      hideInSearch: true,
+      valueEnum: {
+        1: {text: '高', status: 'Warning',},
+        2: {text: '中', status: 'Processing',},
+        3: {text: '低', status: 'Default',},
+      },
+    },
+    {
       title: '系统名称',
       dataIndex: 'systemName',
       ellipsis: true,
@@ -332,10 +420,11 @@ const TableList = () => {
         all: {text: '全部',},
         N: {text: '未完成', status: 'Default',},
         P: {text: '处理中', status: 'Processing',},
-        S: {text: '搁置中', status: 'Warning',},
+        S: {text: '暂停中', status: 'Warning',},
         T: {text: '测试中', status: 'Processing',},
         Y: {text: '已完成', status: 'Success',},
         V: {text: '已结案', status: 'Success',},
+        W: {text: '已取消', status: 'Default',},
       },
       order: 80,
     },
@@ -419,9 +508,8 @@ const TableList = () => {
         />
       ) : null}
     </PageHeaderWrapper>
-  )
-    ;
+  );
 
 };
 
-export default TableList;
+export default Demands;
