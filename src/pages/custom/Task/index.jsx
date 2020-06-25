@@ -3,7 +3,7 @@ import {Button, Dropdown, Menu, message, Modal} from 'antd';
 import React, {useState, useRef} from 'react';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import {queryList, add, update, remove, syncTask} from './service';
+import {queryList, add, update, remove} from './service';
 import CreateForm from './components/CreateForm';
 import UpdateForm from "./components/UpdateForm";
 import {utcDate} from "@/pages/comm";
@@ -81,30 +81,6 @@ const handleRemove = async id => {
   }
 };
 
-/**
- * 添加任务
- * @param fields
- */
-const handleAddTask = async fields => {
-  message.loading('正在添加');
-  try {
-    const res = await syncTask(
-      fields
-    );
-    const {code, msg} = res;
-    if (code < "300") {
-      message.success('添加任务成功');
-      return true;
-    } else {
-      message.error(msg);
-      return false;
-    }
-  } catch (error) {
-    message.error('添加任务失败请重试！');
-    return false;
-  }
-};
-
 const RowOperation = ({item, operate}) => (
   <Dropdown
     overlay={
@@ -113,9 +89,7 @@ const RowOperation = ({item, operate}) => (
         {item.status !== 'V' ? (<Menu.Item key="e">修改</Menu.Item>) : null}
         {item.status !== 'V' ? (<Menu.Item key="d">删除</Menu.Item>) : null}
         {item.status !== 'W' && item.status !== 'V' ? (<Menu.Item key="c">取消</Menu.Item>) : null}
-        {item.status !== 'S' && item.status !== 'V' ? (<Menu.Item key="s">暂停</Menu.Item>) : null}
-        {item.status !== 'T' && item.status !== 'V' ? (<Menu.Item key="t">测试</Menu.Item>) : null}
-        {item.status === 'Y' ? (<Menu.Item key="v">结案</Menu.Item>) : null}
+        {item.status !== 'V' ? (<Menu.Item key="v">结案</Menu.Item>) : null}
         {item.status === 'V' ? (<Menu.Item key="r">还原</Menu.Item>) : null}
       </Menu>
     }
@@ -131,7 +105,7 @@ RowOperation.propTypes = {
   operate: PropTypes.func.isRequired,
 };
 
-const Demands = () => {
+const Task = () => {
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
@@ -150,10 +124,10 @@ const Demands = () => {
         setModalReadOnly(true);
         setCurrentObject({
           ...item,
-          'planStartDate': item.planStartDate ? moment(item.planStartDate) : null,
-          'planOverDate': item.planOverDate ? moment(item.planOverDate) : null,
-          'realStartDate': item.realStartDate ? moment(item.realStartDate) : null,
-          'realOverDate': item.realOverDate ? moment(item.realOverDate) : null,
+          'plannedStartDate': item.plannedStartDate ? moment(item.plannedStartDate) : null,
+          'plannedFinishDate': item.plannedFinishDate ? moment(item.plannedFinishDate) : null,
+          'actualStartDate': item.actualStartDate ? moment(item.actualStartDate) : null,
+          'actualFinishDate': item.actualFinishDate ? moment(item.actualFinishDate) : null,
         });
         break;
       case 'e':
@@ -162,10 +136,10 @@ const Demands = () => {
         setModalReadOnly(false);
         setCurrentObject({
           ...item,
-          'planStartDate': item.planStartDate ? moment(item.planStartDate) : null,
-          'planOverDate': item.planOverDate ? moment(item.planOverDate) : null,
-          'realStartDate': item.realStartDate ? moment(item.realStartDate) : null,
-          'realOverDate': item.realOverDate ? moment(item.realOverDate) : null,
+          'plannedStartDate': item.plannedStartDate ? moment(item.plannedStartDate) : null,
+          'plannedFinishDate': item.plannedFinishDate ? moment(item.plannedFinishDate) : null,
+          'actualStartDate': item.actualStartDate ? moment(item.actualStartDate) : null,
+          'actualFinishDate': item.actualFinishDate ? moment(item.actualFinishDate) : null,
         });
         break;
       case 'd':
@@ -198,56 +172,6 @@ const Demands = () => {
         Modal.confirm({
           title: '取消',
           content: `确定取消${formid}吗？`,
-          okText: '确认',
-          cancelText: '取消',
-          onOk: async () => {
-            const success = await handleUpdate({...value, ...changed});
-
-            if (success) {
-              setCurrentObject({});
-
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }
-        });
-        break;
-      case 's':
-        // suspend
-        changed = {
-          status: 'S',
-          optdate: moment.utc().format(),
-        };
-
-        Modal.confirm({
-          title: '暂停',
-          content: `确定暂停${formid}吗？`,
-          okText: '确认',
-          cancelText: '取消',
-          onOk: async () => {
-            const success = await handleUpdate({...value, ...changed});
-
-            if (success) {
-              setCurrentObject({});
-
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }
-        });
-        break;
-      case 't':
-        // test
-        changed = {
-          status: 'T',
-          optdate: moment.utc().format(),
-        };
-
-        Modal.confirm({
-          title: '测试',
-          content: `确定进行${formid}测试吗？`,
           okText: '确认',
           cancelText: '取消',
           onOk: async () => {
@@ -321,61 +245,32 @@ const Demands = () => {
       hideInSearch: true,
     },
     {
-      title: '需求编号',
-      dataIndex: 'formid',
-      width: 120,
-      fixed: 'left',
-      hideInSearch: true,
-    },
-    {
-      title: '需求简述',
-      dataIndex: 'demandResume',
+      title: '任务',
+      dataIndex: 'name',
       width: 300,
       fixed: 'left',
       ellipsis: true,
     },
     {
-      title: '登记日期',
-      dataIndex: 'formdate',
-      valueType: 'dateRange',
-      render: (_, item) => (
-        item.formdate ? <span>{utcDate(item.formdate)}</span> : null
-      ),
-      order: 100,
-    },
-    {
-      title: '需求内容',
-      dataIndex: 'demandContent',
+      title: '任务描述',
+      dataIndex: 'description',
       hideInTable: true,
       hideInSearch: true,
     },
     {
-      title: '需求部门ID',
-      dataIndex: 'demanderDeptID',
-    },
-    {
-      title: '需求部门',
-      dataIndex: 'demanderDeptName',
+      title: '执行人ID',
+      dataIndex: 'executorId',
       hideInSearch: true,
+      width: 100,
     },
     {
-      title: '需求人ID',
-      dataIndex: 'demanderID',
-      hideInSearch: true,
-    },
-    {
-      title: '需求人',
-      dataIndex: 'demanderName',
-    },
-    {
-      title: '需求日期',
-      dataIndex: 'demandDate',
-      valueType: 'date',
-      hideInSearch: true,
+      title: '执行人',
+      dataIndex: 'executor',
+      width: 100,
     },
     {
       title: '紧急度',
-      dataIndex: 'emergencyDegree',
+      dataIndex: 'priority',
       hideInSearch: true,
       valueEnum: {
         1: {text: '高', status: 'Warning',},
@@ -384,56 +279,45 @@ const Demands = () => {
       },
     },
     {
-      title: '系统名称',
-      dataIndex: 'systemName',
-      ellipsis: true,
-    },
-    {
-      title: '负责部门ID',
-      dataIndex: 'directorDeptID',
-    },
-    {
-      title: '负责部门',
-      dataIndex: 'directorDeptName',
-      hideInSearch: true,
-    },
-    {
-      title: '负责人ID',
-      dataIndex: 'directorID',
-      hideInSearch: true,
-    },
-    {
-      title: '负责人',
-      dataIndex: 'directorName',
-    },
-    {
       title: '计划开始',
-      dataIndex: 'planStartDate',
+      dataIndex: 'plannedStartDate',
       valueType: 'date',
       hideInSearch: true,
     },
     {
       title: '计划完成',
-      dataIndex: 'planOverDate',
+      dataIndex: 'plannedFinishDate',
       valueType: 'dateRange',
       render: (_, item) => (
-        item.planOverDate ? <span>{utcDate(item.planOverDate)}</span> : null
+        item.plannedFinishDate ? <span>{utcDate(item.plannedFinishDate)}</span> : null
       ),
     },
     {
       title: '实际开始',
-      dataIndex: 'realStartDate',
+      dataIndex: 'actualStartDate',
       valueType: 'date',
       hideInSearch: true,
     },
     {
       title: '实际完成',
-      dataIndex: 'realOverDate',
+      dataIndex: 'actualFinishDate',
       valueType: 'dateRange',
       render: (_, item) => (
-        item.realOverDate ? <span>{utcDate(item.realOverDate)}</span> : null
+        item.actualFinishDate ? <span>{utcDate(item.actualFinishDate)}</span> : null
       ),
       order: 90,
+    },
+    {
+      title: '来源',
+      dataIndex: 'contextObject',
+      width: 80,
+      valueEnum: {
+        all: {text: '全部',},
+        P: {text: '项目', status: 'Processing',},
+        D: {text: '需求', status: 'Warning',},
+        T: {text: '任务', status: 'Default',},
+      },
+      order: 70,
     },
     {
       title: '状态',
@@ -445,9 +329,7 @@ const Demands = () => {
         N: {text: '未完成', status: 'Default',},
         P: {text: '处理中', status: 'Processing',},
         S: {text: '暂停中', status: 'Warning',},
-        T: {text: '测试中', status: 'Processing',},
         Y: {text: '已完成', status: 'Success',},
-        V: {text: '已结案', status: 'Success',},
         W: {text: '已取消', status: 'Default',},
       },
       order: 80,
@@ -482,10 +364,10 @@ const Demands = () => {
         pagination={{
           showSizeChanger: true,
         }}
-        scroll={{x: 2800}}
+        scroll={{x: 1300}}
         expandable={{
-          expandedRowRender: record => <p style={{margin: 0}}>{record.demandContent}</p>,
-          rowExpandable: record => record.demandContent,
+          expandedRowRender: record => <p style={{margin: 0}}>{record.description}</p>,
+          rowExpandable: record => record.description,
         }}
       />
       <CreateForm
@@ -526,18 +408,6 @@ const Demands = () => {
             setUpdateModalVisible(false);
             setCurrentObject({});
           }}
-          syncTask={async value => {
-            const success = await handleAddTask({...currentObject, ...value});
-
-            if (success) {
-              setUpdateModalVisible(false);
-              setCurrentObject({});
-
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
           modalVisible={updateModalVisible}
           values={currentObject}
           readOnly={modalReadOnly}
@@ -548,4 +418,4 @@ const Demands = () => {
 
 };
 
-export default Demands;
+export default Task;

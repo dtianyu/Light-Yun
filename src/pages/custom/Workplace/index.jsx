@@ -104,18 +104,14 @@ class Workplace extends Component {
         <List.Item.Meta
           title={
             <span>
-              <a className={styles.username}>{item.demanderDeptName}</a>
+              <a className={styles.username}>{item.name}</a>
               &nbsp;
-              <a className={styles.username}>{item.demanderName}</a>
-              &nbsp;
-              <span className={styles.event}>{item.demandResume}</span>
-              &nbsp;
-              <span className={styles.datetime}>{item.planStartDate}</span>
+              <span className={styles.datetime}>{item.plannedFinishDate}</span>
             </span>
           }
           description={
-            <span className={styles.datetime} title={item.demandDate}>
-              {moment(item.demandDate).fromNow()}
+            <span title={item.name}>
+              {item.description}
             </span>
           }
         />
@@ -144,6 +140,25 @@ class Workplace extends Component {
       >
         <Row gutter={24}>
           <Col xl={16} lg={24} md={24} sm={24} xs={24}>
+            <Card
+              bodyStyle={{
+                padding: 0,
+              }}
+              bordered={false}
+              className={styles.activeCard}
+              title="我的任务"
+              loading={activitiesLoading}
+              extra={<Link to="/custom/task">任务清单</Link>}
+            >
+              <List
+                loading={activitiesLoading}
+                renderItem={item => this.renderActivities(item)}
+                dataSource={activities}
+                className={styles.activitiesList}
+                pagination={true}
+                size="large"
+              />
+            </Card>
             <Card
               className={styles.projectList}
               style={{
@@ -185,25 +200,6 @@ class Workplace extends Component {
                   </Card>
                 </Card.Grid>
               ))}
-            </Card>
-            <Card
-              bodyStyle={{
-                padding: 0,
-              }}
-              bordered={false}
-              className={styles.activeCard}
-              title="我的任务"
-              loading={activitiesLoading}
-              extra={<Link to="/custom/demands">优化需求</Link>}
-            >
-              <List
-                loading={activitiesLoading}
-                renderItem={item => this.renderActivities(item)}
-                dataSource={activities}
-                className={styles.activitiesList}
-                pagination={true}
-                size="large"
-              />
             </Card>
           </Col>
           <Col xl={8} lg={24} md={24} sm={24} xs={24}>

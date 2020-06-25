@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import {eapAppToken, formatDateTime} from "@/pages/comm";
 
-const url = '/api/eap/demands';
+const url = '/api/eap/task';
 
 export async function queryList(params) {
   console.log(params);
@@ -65,7 +65,8 @@ export async function queryList(params) {
 }
 
 export async function add(params) {
-  const response = request(url, {
+  let response;
+  response = request(url, {
     method: 'POST',
     data: {...params},
     params: {
@@ -76,7 +77,8 @@ export async function add(params) {
 }
 
 export async function update(params) {
-  const response = await request(`${url}/${params.id}`, {
+  let response;
+  response = await request(`${url}/${params.id}`, {
     method: 'PUT',
     data: {...params, method: 'update'},
     params: {
@@ -87,19 +89,9 @@ export async function update(params) {
 }
 
 export async function remove(id) {
-  const response = await request(`${url}/${id}`, {
+  let response;
+  response = await request(`${url}/${id}`, {
     method: 'DELETE',
-    params: {
-      ...eapAppToken
-    },
-  });
-  return response;
-}
-
-export async function syncTask(params) {
-  const response = request(url + '/task', {
-    method: 'POST',
-    data: {...params},
     params: {
       ...eapAppToken
     },

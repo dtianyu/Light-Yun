@@ -1,4 +1,4 @@
-import {fakeChartData, queryActivities, queryDemands, queryProjectNotice} from './service';
+import {fakeChartData, queryActivities, queryProjectNotice, queryTask} from './service';
 
 const Model = {
   namespace: 'dashboardAndWorkplace',
@@ -14,7 +14,7 @@ const Model = {
         type: 'fetchProjectNotice',
       });
       yield put({
-        type: 'fetchDemands', payload: payload,
+        type: 'fetchTask', payload: payload,
       });
       yield put({
         type: 'fetchChart',
@@ -31,8 +31,8 @@ const Model = {
       });
     },
 
-    * fetchDemands({payload}, {call, put}) {
-      const response = yield call(queryDemands, {directorID: "C0160", status: "N", current: 1, pageSize: 500});
+    * fetchTask({payload}, {call, put}) {
+      const response = yield call(queryTask, {executorId: "C0160", status: "N", current: 1, pageSize: 500});
       yield put({
         type: 'save',
         payload: {

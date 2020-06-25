@@ -1,9 +1,8 @@
 // https://umijs.org/config/
-import {defineConfig} from 'umi';
+import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
-
-const {REACT_APP_ENV} = process.env;
+const { REACT_APP_ENV } = process.env;
 export default defineConfig({
   hash: true,
   antd: {},
@@ -94,7 +93,19 @@ export default defineConfig({
                   path: '/custom/workplace',
                   component: './custom/workplace',
                 },
+                {
+                  name: 'task',
+                  icon: 'smile',
+                  path: '/custom/task',
+                  component: './custom/task',
+                },
               ],
+            },
+            {
+              name: '高级详情页',
+              icon: 'smile',
+              path: '/profileadvanced',
+              component: './ProfileAdvanced',
             },
             {
               component: './404',

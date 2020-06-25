@@ -2,10 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, DatePicker, Button, Radio} from 'antd';
 import {utcFormat} from "@/pages/comm";
 import SystemUser from "@/pages/modal/SystemUser";
-import * as moment from "moment";
 import Department from "@/pages/modal/Department";
-import SystemNameSelect from "@/pages/components/SystemNameSelect";
-
+import * as moment from "moment";
 
 const FormItem = Form.Item;
 const {TextArea} = Input;
@@ -51,9 +49,8 @@ const CreateForm = props => {
             // console.log(fieldsValue);
             const values = {
               ...fieldsValue,
-              'formid': '',
-              'formdate': moment.utc().format(),
-              'demandDate': fieldsValue.demandDate ? utcFormat(fieldsValue.demandDate) : null,
+              'plannedStartDate': fieldsValue.plannedStartDate ? utcFormat(fieldsValue.plannedStartDate) : null,
+              'plannedFinishDate': fieldsValue.plannedFinishDate ? utcFormat(fieldsValue.plannedFinishDate) : null,
               'status': 'N',
             }
             handleAdd(values);
@@ -63,44 +60,26 @@ const CreateForm = props => {
       >
         <Form form={form} {...formItemLayout}>
           <FormItem
-            label="需求简述"
-            name="demandResume"
+            label="任务名称"
+            name="name"
             rules={[
               {
                 required: true,
-                message: '请输入需求简述，最多20个字',
+                message: '请输入任务名称，最多20个字',
                 max: 20
               },
             ]}>
-            <Input placeholder="需求简述"/>
+            <Input placeholder="任务名称"/>
           </FormItem>
           <FormItem
-            label="系统名称"
-            name="systemName"
-            rules={[
-              {
-                required: true,
-                message: '请选择系统名称',
-              },
-            ]}>
-            <SystemNameSelect
-              width='100%'>
-            </SystemNameSelect>
-          </FormItem>
-          <FormItem
-            label="需求内容"
-            name="demandContent"
-            rules={[
-              {
-                required: true,
-                message: '请输入需求内容',
-              },
-            ]}>
-            <TextArea placeholder="需求内容" rows={4}/>
+            label="任务描述"
+            name="description"
+          >
+            <TextArea placeholder="任务描述" rows={4}/>
           </FormItem>
           <FormItem
             label="紧急度"
-            name="emergencyDegree"
+            name="priority"
             rules={[
               {
                 required: true,
@@ -113,44 +92,42 @@ const CreateForm = props => {
               <Radio value="3">低</Radio>
             </Radio.Group>
           </FormItem>
-          <FormItem label="需求人" style={{marginBottom: 0}} required={true}>
+          <FormItem label="执行人" style={{marginBottom: 0}} required={true}>
             <Input.Group compact={true}>
               <FormItem
-                name="demanderID"
+                name="executorId"
                 rules={[
                   {
                     required: true,
-                    message: '请输入需求人',
+                    message: '请输入执行人ID',
                   }]}>
-                <Input placeholder="需求人ID"/>
+                <Input placeholder="执行人ID"/>
               </FormItem>
               <FormItem
-                name="demanderName"
-                rules={[{required: true}]}
-              >
-                <Input placeholder="需求人"/>
+                name="executor"
+                rules={[
+                  {
+                    required: true,
+                    message: '请输入执行人姓名',
+                  }]}>
+                <Input placeholder="执行人姓名"/>
               </FormItem>
               <FormItem>
                 <Button type="primary" onClick={() => setUserModalVisible(true)}>查询</Button>
               </FormItem>
             </Input.Group>
           </FormItem>
-          <FormItem label="需求部门" style={{marginBottom: 0}}>
+          <FormItem label="执行部门" style={{marginBottom: 0}}>
             <Input.Group compact={true}>
               <FormItem
-                name="demanderDeptID"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入需求部门',
-                  }]}>
-                <Input placeholder="需求部门ID"/>
+                name="deptId"
+              >
+                <Input placeholder="执行部门ID"/>
               </FormItem>
               <FormItem
-                name="demanderDeptName"
-                rules={[{required: true}]}
+                name="dept"
               >
-                <Input placeholder="需求部门"/>
+                <Input placeholder="执行部门"/>
               </FormItem>
               <FormItem>
                 <Button type="primary" onClick={() => setDeptModalVisible(true)}>查询</Button>
@@ -158,8 +135,15 @@ const CreateForm = props => {
             </Input.Group>
           </FormItem>
           <FormItem
-            label="需求日期"
-            name="demandDate"
+            label="计划开始"
+            name="plannedStartDate"
+            rules={[{required: true}]}
+          >
+            <DatePicker/>
+          </FormItem>
+          <FormItem
+            label="计划完成"
+            name="plannedFinishDate"
             rules={[{required: true}]}
           >
             <DatePicker/>
@@ -175,10 +159,10 @@ const CreateForm = props => {
         onHandle={async data => {
           if (data.length === 1) {
             form.setFieldsValue({
-              demanderID: data[0].userid,
-              demanderName: data[0].username,
-              demanderDeptID: data[0].deptno,
-              demanderDeptName: data[0].dept.dept,
+              executorId: data[0].userid,
+              executor: data[0].username,
+              deptId: data[0].deptno,
+              dept: data[0].dept.dept,
             });
           }
           setUserModalVisible(false);
@@ -193,8 +177,8 @@ const CreateForm = props => {
         onHandle={data => {
           if (data.length === 1) {
             form.setFieldsValue({
-              demanderDeptID: data[0].deptno,
-              demanderDeptName: data[0].dept,
+              deptId: data[0].deptno,
+              dept: data[0].dept,
             });
           }
           setDeptModalVisible(false);
