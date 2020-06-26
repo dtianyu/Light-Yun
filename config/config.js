@@ -102,12 +102,6 @@ export default defineConfig({
               ],
             },
             {
-              name: '高级详情页',
-              icon: 'smile',
-              path: '/profileadvanced',
-              component: './ProfileAdvanced',
-            },
-            {
               component: './404',
             },
           ],

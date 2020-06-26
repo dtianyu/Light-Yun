@@ -1,4 +1,4 @@
-import {fakeChartData, queryActivities, queryProjectNotice, queryTask} from './service';
+import {fakeChartData, queryProjectNotice, queryTask} from './service';
 
 const Model = {
   namespace: 'dashboardAndWorkplace',

@@ -26,7 +26,7 @@ export async function queryTask(params) {
   } else {
     q = url
   }
-  console.log(q);
+  // console.log(q);
   const response = await request(q, {
     params: {
       ...eapAppToken
