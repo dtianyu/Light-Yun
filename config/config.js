@@ -94,12 +94,24 @@ export default defineConfig({
                   component: './custom/workplace',
                 },
                 {
-                  name: 'task',
+                  name: 'tasks',
                   icon: 'smile',
-                  path: '/custom/task',
-                  component: './custom/task',
+                  path: '/custom/tasks',
+                  component: './custom/tasks',
                 },
               ],
+            },
+            {
+              name: '高级详情页',
+              icon: 'smile',
+              path: '/profileadvanced',
+              component: './ProfileAdvanced',
+            },
+            {
+              name: '高级表单',
+              icon: 'smile',
+              path: '/formadvancedform',
+              component: './FormAdvancedForm',
             },
             {
               component: './404',

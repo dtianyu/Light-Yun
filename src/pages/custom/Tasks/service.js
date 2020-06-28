@@ -11,35 +11,8 @@ export async function queryList(params) {
   if (Object.keys(params).length === 2) {
     f = `${f};status=N`;
   } else {
-    if (params.demanderDeptID) {
-      f = `${f};demanderDeptID=${params.demanderDeptID}`;
-    }
-    if (params.demanderName) {
-      f = `${f};demanderName=${params.demanderName}`;
-    }
-    if (params.demandResume) {
-      f = `${f};demandResume=${params.demandResume}`;
-    }
-    if (params.directorDeptID) {
-      f = `${f};directorDeptID=${params.directorDeptID}`;
-    }
-    if (params.directorID) {
-      f = `${f};directorID=${params.directorID}`;
-    }
-    if (params.directorName) {
-      f = `${f};directorName=${params.directorName}`;
-    }
-    if (params.formdate && params.formdate.length === 2) {
-      f = `${f};formdateBegin=${formatDateTime(params.formdate[0])};formdateEnd=${formatDateTime(params.formdate[1])}`;
-    }
-    if (params.planOverDate && params.planOverDate.length === 2) {
-      f = `${f};planOverDateBegin=${formatDateTime(params.planOverDate[0])};planOverDateEnd=${formatDateTime(params.planOverDate[1])}`;
-    }
-    if (params.realOverDate && params.realOverDate.length === 2) {
-      f = `${f};realOverDateBegin=${formatDateTime(params.realOverDate[0])};realOverDateEnd=${formatDateTime(params.realOverDate[1])}`;
-    }
-    if (params.systemName) {
-      f = `${f};systemName=${params.systemName}`;
+    if (params.executorId) {
+      f = `${f};executorId=${params.executorId}`;
     }
     if (params.status) {
       f = `${f};status=${params.status}`;
@@ -64,7 +37,7 @@ export async function queryList(params) {
   };
 }
 
-export async function add(params) {
+export async function create(params) {
   let response;
   response = request(url, {
     method: 'POST',

@@ -147,7 +147,7 @@ const UpdateForm = props => {
               </FormItem>
             </Input.Group>
           </FormItem>
-          <FormItem label="负责部门" style={{marginBottom: 0}}>
+          <FormItem label="负责部门" style={{marginBottom: 0}} required={true}>
             <Input.Group compact={true}>
               <FormItem
                 name="directorDeptID"
@@ -166,12 +166,14 @@ const UpdateForm = props => {
           </FormItem>
           <FormItem
             label="计划开始"
-            name="planStartDate">
+            name="planStartDate"
+            rules={[{required: true}]}>
             <DatePicker disabled={readOnly}/>
           </FormItem>
           <FormItem
             label="计划完成"
-            name="planOverDate">
+            name="planOverDate"
+            rules={[{required: true}]}>
             <DatePicker disabled={readOnly}/>
           </FormItem>
           <FormItem

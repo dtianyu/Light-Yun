@@ -1,7 +1,7 @@
 import {fakeChartData, queryProjectNotice, queryTask} from './service';
 
 const Model = {
-  namespace: 'dashboardAndWorkplace',
+  namespace: 'workplaceModel',
   state: {
     currentUser: undefined,
     projectNotice: [],
@@ -32,7 +32,7 @@ const Model = {
     },
 
     * fetchTask({payload}, {call, put}) {
-      const response = yield call(queryTask, {executorId: "C0160", status: "N", current: 1, pageSize: 500});
+      const response = yield call(queryTask, {executorId: payload.userid, status: "N", current: 1, pageSize: 500});
       yield put({
         type: 'save',
         payload: {

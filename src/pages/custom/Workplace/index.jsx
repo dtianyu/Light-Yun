@@ -9,12 +9,12 @@ import styles from './style.less';
 
 const links = [
   {
-    title: '操作一',
-    href: '',
+    title: 'OA',
+    href: 'oa.hanbell.com.cn:8086/NaNaWeb',
   },
   {
-    title: '操作二',
-    href: '',
+    title: 'EAM',
+    href: 'eam.hanbell.com.cn:8480/Hanbell-EAM',
   },
   {
     title: '操作三',
@@ -86,15 +86,17 @@ class Workplace extends Component {
 
   componentDidMount() {
     const {dispatch, currentUser} = this.props;
-    dispatch({
-      type: 'dashboardAndWorkplace/init', payload: {userid: currentUser.userid}
-    });
+    if (dispatch && currentUser) {
+      dispatch({
+        type: 'workplaceModel/init', payload: {userid: currentUser.userid}
+      });
+    }
   }
 
   componentWillUnmount() {
     const {dispatch} = this.props;
     dispatch({
-      type: 'dashboardAndWorkplace/clear',
+      type: 'workplaceModel/clear',
     });
   }
 
@@ -106,7 +108,7 @@ class Workplace extends Component {
             <span>
               <a className={styles.username}>{item.name}</a>
               &nbsp;
-              <span className={styles.datetime}>{item.plannedFinishDate}</span>
+              <span className={styles.datetime}>期限{moment(item.plannedFinishDate).format("YYYY-MM-DD")}</span>
             </span>
           }
           description={
@@ -148,7 +150,7 @@ class Workplace extends Component {
               className={styles.activeCard}
               title="我的任务"
               loading={activitiesLoading}
-              extra={<Link to="/custom/task">任务清单</Link>}
+              extra={<Link to="/custom/tasks">任务清单</Link>}
             >
               <List
                 loading={activitiesLoading}
@@ -258,13 +260,13 @@ class Workplace extends Component {
 }
 
 export default connect(
-  ({user, dashboardAndWorkplace: {projectNotice, activities, radarData}, loading}) => ({
+  ({user, workplaceModel: {projectNotice, activities, radarData}, loading}) => ({
     currentUser: user.currentUser,
     projectNotice,
     activities,
     radarData,
     currentUserLoading: loading.effects['user/fetchCurrent'],
-    projectLoading: loading.effects['dashboardAndWorkplace/fetchProjectNotice'],
-    activitiesLoading: loading.effects['dashboardAndWorkplace/fetchActivitiesList'],
+    projectLoading: loading.effects['workplaceModel/fetchProjectNotice'],
+    activitiesLoading: loading.effects['workplaceModel/fetchActivitiesList'],
   }),
 )(Workplace);

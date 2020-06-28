@@ -1,5 +1,5 @@
 import {DownOutlined, PlusOutlined} from '@ant-design/icons';
-import {Button, Dropdown, Menu, message, Modal} from 'antd';
+import {Button, Col, Dropdown, Menu, message, Modal, Row} from 'antd';
 import React, {useState, useRef} from 'react';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
@@ -59,7 +59,7 @@ const handleUpdate = async fields => {
 };
 
 /**
- *  删除
+ * 删除
  * @param id
  */
 const handleRemove = async id => {
@@ -349,70 +349,78 @@ const Task = () => {
   ];
 
   return (
-    <PageHeaderWrapper>
-      <ProTable
-        headerTitle="资料列表"
-        actionRef={actionRef}
-        rowKey="id"
-        toolBarRender={(action, {selectedRows}) => [
-          <Button icon={<PlusOutlined/>} type="primary" onClick={() => setCreateModalVisible(true)}>
-            新建
-          </Button>,
-        ]}
-        request={params => queryList(params)}
-        columns={columns}
-        pagination={{
-          showSizeChanger: true,
-        }}
-        scroll={{x: 1300}}
-        expandable={{
-          expandedRowRender: record => <p style={{margin: 0}}>{record.description}</p>,
-          rowExpandable: record => record.description,
-        }}
-      />
-      <CreateForm
-        onFinish={async value => {
-          const success = await handleAdd(value);
-
-          if (success) {
-            setCreateModalVisible(false);
-
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-        onCancel={() => setCreateModalVisible(false)}
-        modalVisible={createModalVisible}
-      />
-      {currentObject && Object.keys(currentObject).length ? (
-        <UpdateForm
+    <PageHeaderWrapper
+      title="单号：234231029431">
+      <Row gutter={24}>
+        <Col xl={16} lg={24} md={24} sm={24} xs={24}>
+          <ProTable
+            headerTitle="资料列表"
+            actionRef={actionRef}
+            rowKey="id"
+            toolBarRender={(action, {selectedRows}) => [
+              <Button icon={<PlusOutlined/>} type="primary" onClick={() => setCreateModalVisible(true)}>
+                新建
+              </Button>,
+            ]}
+            request={params => queryList(params)}
+            columns={columns}
+            pagination={{
+              showSizeChanger: true,
+            }}
+            scroll={{x: 1300}}
+            expandable={{
+              expandedRowRender: record => <p style={{margin: 0}}>{record.description}</p>,
+              rowExpandable: record => record.description,
+            }}
+          />
+        </Col>
+        <Col xl={8} lg={24} md={24} sm={24} xs={24}>
+          ...
+        </Col>
+        <CreateForm
           onFinish={async value => {
-            if (value.realOverDate && value.status !== 'V') {
-              value.status = 'Y';
-            } else {
-              value.status = 'N';
-            }
-            const success = await handleUpdate({...currentObject, ...value});
+            const success = await handleAdd(value);
 
             if (success) {
-              setUpdateModalVisible(false);
-              setCurrentObject({});
+              setCreateModalVisible(false);
 
               if (actionRef.current) {
                 actionRef.current.reload();
               }
             }
           }}
-          onCancel={() => {
-            setUpdateModalVisible(false);
-            setCurrentObject({});
-          }}
-          modalVisible={updateModalVisible}
-          values={currentObject}
-          readOnly={modalReadOnly}
+          onCancel={() => setCreateModalVisible(false)}
+          modalVisible={createModalVisible}
         />
-      ) : null}
+        {currentObject && Object.keys(currentObject).length ? (
+          <UpdateForm
+            onFinish={async value => {
+              if (value.realOverDate && value.status !== 'V') {
+                value.status = 'Y';
+              } else {
+                value.status = 'N';
+              }
+              const success = await handleUpdate({...currentObject, ...value});
+
+              if (success) {
+                setUpdateModalVisible(false);
+                setCurrentObject({});
+
+                if (actionRef.current) {
+                  actionRef.current.reload();
+                }
+              }
+            }}
+            onCancel={() => {
+              setUpdateModalVisible(false);
+              setCurrentObject({});
+            }}
+            modalVisible={updateModalVisible}
+            values={currentObject}
+            readOnly={modalReadOnly}
+          />
+        ) : null}
+      </Row>
     </PageHeaderWrapper>
   );
 

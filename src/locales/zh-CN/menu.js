@@ -53,5 +53,5 @@ export default {
   'menu.custom.company': '公司列表',
   'menu.custom.demands': '优化需求',
   'menu.custom.workplace': '工作任务',
-  'menu.custom.task': '任务清单',
+  'menu.custom.tasks': '任务清单',
 };
