@@ -5,27 +5,19 @@ export async function queryProjectNotice() {
   return request('/api/project/notice');
 }
 
-export async function queryActivities(params) {
-  return request('/api/activities');
-}
-
 export async function queryTask(params) {
   // console.log(params);
   let url = '/api/eap/task';
   let q;
   let f = '/f';
-  let s = '/s';
+  let s = '/s;plannedStartDate=ASC;priority=ASC';
   if (params.executorId) {
     f = `${f};executorId=${params.executorId}`;
   }
   if (params.status) {
     f = `${f};status=${params.status}`;
   }
-  if (params.current && params.pageSize) {
-    q = `${url}${f}${s}/${(params.current - 1) * params.pageSize}/${params.pageSize}`;
-  } else {
-    q = url
-  }
+  q = `${url}${f}${s}/0/5`;
   // console.log(q);
   const response = await request(q, {
     params: {
@@ -41,6 +33,29 @@ export async function queryTask(params) {
   };
 }
 
+export async function queryChartData(params) {
+  // console.log(params);
+  let url = '/api/eap/systemuser/chart';
+  if (params.userid) {
+    const response = await request(url, {
+      params: {
+        userid: params.userid,
+        ...eapAppToken
+      },
+    });
+    // ResponseObject JSON
+    const {object} = response;
+    return {
+      radarData: object.radarData,
+    };
+  } else {
+    return {
+      radarData: [],
+    };
+  }
+
+
+}
 
 export async function fakeChartData() {
   return request('/api/fake_chart_data');

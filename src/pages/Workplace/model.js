@@ -1,23 +1,21 @@
 import {fakeChartData, queryProjectNotice, queryTask} from './service';
+import {queryChartData} from "@/pages/Workplace/service";
 
 const Model = {
   namespace: 'workplaceModel',
   state: {
     currentUser: undefined,
     projectNotice: [],
-    activities: [],
+    tasks: [],
     radarData: [],
   },
   effects: {
     * init({payload}, {put}) {
       yield put({
-        type: 'fetchProjectNotice',
-      });
-      yield put({
         type: 'fetchTask', payload: payload,
       });
       yield put({
-        type: 'fetchChart',
+        type: 'fetchChartData', payload: payload,
       });
     },
 
@@ -32,17 +30,17 @@ const Model = {
     },
 
     * fetchTask({payload}, {call, put}) {
-      const response = yield call(queryTask, {executorId: payload.userid, status: "N", current: 1, pageSize: 500});
+      const response = yield call(queryTask, {executorId: payload.userid, status: "N"});
       yield put({
         type: 'save',
         payload: {
-          activities: Array.isArray(response.data) ? response.data : [],
+          tasks: Array.isArray(response.data) ? response.data : [],
         },
       });
     },
 
-    * fetchChart(_, {call, put}) {
-      const {radarData} = yield call(fakeChartData);
+    * fetchChartData({payload: {userid}}, {call, put}) {
+      const {radarData} = yield call(queryChartData, {userid});
       yield put({
         type: 'save',
         payload: {
@@ -50,6 +48,7 @@ const Model = {
         },
       });
     },
+
   },
   reducers: {
     save(state, {payload}) {
@@ -60,7 +59,7 @@ const Model = {
       return {
         currentUser: undefined,
         projectNotice: [],
-        activities: [],
+        tasks: [],
         radarData: [],
       };
     },

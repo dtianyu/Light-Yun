@@ -14,6 +14,7 @@ const EditableLinkGroup = props => {
             key: `linkGroup-item-${link.id || link.title}`,
             to: link.href,
             href: link.href,
+            target:'parent',
           },
           link.title,
         ),

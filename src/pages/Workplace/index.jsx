@@ -10,7 +10,7 @@ import styles from './style.less';
 const links = [
   {
     title: 'OA',
-    href: 'oa.hanbell.com.cn:8086/NaNaWeb',
+    href: 'http://oa.hanbell.com.cn:8086/NaNaWeb',
   },
   {
     title: 'EAM',
@@ -100,15 +100,17 @@ class Workplace extends Component {
     });
   }
 
-  renderActivities = item => {
+  renderTasks = item => {
     return (
       <List.Item key={item.id}>
         <List.Item.Meta
           title={
             <span>
               <a className={styles.username}>{item.name}</a>
-              &nbsp;
-              <span className={styles.datetime}>期限{moment(item.plannedFinishDate).format("YYYY-MM-DD")}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span className={styles.datetime}>{moment(item.plannedStartDate).format("YYYY-MM-DD")}</span>
+              -
+              <span className={styles.datetime}>{moment(item.plannedFinishDate).format("YYYY-MM-DD")}</span>
             </span>
           }
           description={
@@ -124,10 +126,10 @@ class Workplace extends Component {
   render() {
     const {
       currentUser,
-      activities,
+      tasks,
       projectNotice,
       projectLoading,
-      activitiesLoading,
+      taskLoading,
       radarData,
     } = this.props;
 
@@ -149,59 +151,16 @@ class Workplace extends Component {
               bordered={false}
               className={styles.activeCard}
               title="我的任务"
-              loading={activitiesLoading}
+              loading={taskLoading}
               extra={<Link to="/custom/tasks">任务清单</Link>}
             >
               <List
-                loading={activitiesLoading}
-                renderItem={item => this.renderActivities(item)}
-                dataSource={activities}
+                loading={taskLoading}
+                renderItem={item => this.renderTasks(item)}
+                dataSource={tasks}
                 className={styles.activitiesList}
-                pagination={true}
                 size="large"
               />
-            </Card>
-            <Card
-              className={styles.projectList}
-              style={{
-                marginBottom: 24,
-              }}
-              title="进行中的项目"
-              bordered={false}
-              extra={<Link to="/">全部项目</Link>}
-              loading={projectLoading}
-              bodyStyle={{
-                padding: 0,
-              }}
-            >
-              {projectNotice.map(item => (
-                <Card.Grid className={styles.projectGrid} key={item.id}>
-                  <Card
-                    bodyStyle={{
-                      padding: 0,
-                    }}
-                    bordered={false}
-                  >
-                    <Card.Meta
-                      title={
-                        <div className={styles.cardTitle}>
-                          <Avatar size="small" src={item.logo}/>
-                          <Link to={item.href}>{item.title}</Link>
-                        </div>
-                      }
-                      description={item.description}
-                    />
-                    <div className={styles.projectItemContent}>
-                      <Link to={item.memberLink}>{item.member || ''}</Link>
-                      {item.updatedAt && (
-                        <span className={styles.datetime} title={item.updatedAt}>
-                          {moment(item.updatedAt).fromNow()}
-                        </span>
-                      )}
-                    </div>
-                  </Card>
-                </Card.Grid>
-              ))}
             </Card>
           </Col>
           <Col xl={8} lg={24} md={24} sm={24} xs={24}>
@@ -223,33 +182,11 @@ class Workplace extends Component {
                 marginBottom: 24,
               }}
               bordered={false}
-              title="XX 指数"
+              title="员工魅力指数"
               loading={radarData.length === 0}
             >
               <div className={styles.chart}>
                 <Radar hasLegend height={343} data={radarData}/>
-              </div>
-            </Card>
-            <Card
-              bodyStyle={{
-                paddingTop: 12,
-                paddingBottom: 12,
-              }}
-              bordered={false}
-              title="团队"
-              loading={projectLoading}
-            >
-              <div className={styles.members}>
-                <Row gutter={48}>
-                  {projectNotice.map(item => (
-                    <Col span={12} key={`members-item-${item.id}`}>
-                      <Link to={item.href}>
-                        <Avatar src={item.logo} size="small"/>
-                        <span className={styles.member}>{item.member}</span>
-                      </Link>
-                    </Col>
-                  ))}
-                </Row>
               </div>
             </Card>
           </Col>
@@ -260,13 +197,13 @@ class Workplace extends Component {
 }
 
 export default connect(
-  ({user, workplaceModel: {projectNotice, activities, radarData}, loading}) => ({
+  ({user, workplaceModel: {projectNotice, tasks, radarData}, loading}) => ({
     currentUser: user.currentUser,
     projectNotice,
-    activities,
+    tasks,
     radarData,
     currentUserLoading: loading.effects['user/fetchCurrent'],
     projectLoading: loading.effects['workplaceModel/fetchProjectNotice'],
-    activitiesLoading: loading.effects['workplaceModel/fetchActivitiesList'],
+    taskLoading: loading.effects['workplaceModel/fetchTask'],
   }),
 )(Workplace);

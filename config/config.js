@@ -46,13 +46,13 @@ export default defineConfig({
           routes: [
             {
               path: '/',
-              redirect: '/welcome',
+              redirect: '/workplace',
             },
             {
-              path: '/welcome',
-              name: 'welcome',
+              name: 'workplace',
               icon: 'smile',
-              component: './Welcome',
+              path: '/workplace',
+              component: './workplace',
             },
             {
               path: '/admin',
@@ -88,12 +88,6 @@ export default defineConfig({
                   component: './custom/demands',
                 },
                 {
-                  name: 'workplace',
-                  icon: 'smile',
-                  path: '/custom/workplace',
-                  component: './custom/workplace',
-                },
-                {
                   name: 'tasks',
                   icon: 'smile',
                   path: '/custom/tasks',
@@ -112,6 +106,12 @@ export default defineConfig({
               icon: 'smile',
               path: '/formadvancedform',
               component: './FormAdvancedForm',
+            },
+            {
+              path: '/welcome',
+              name: 'welcome',
+              icon: 'smile',
+              component: './Welcome',
             },
             {
               component: './404',

@@ -49,9 +49,9 @@ export default {
   'menu.editor.flow': '流程编辑器',
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
+  'menu.workplace': '工作台',
   'menu.custom': '学习进度',
   'menu.custom.company': '公司列表',
   'menu.custom.demands': '优化需求',
-  'menu.custom.workplace': '工作任务',
   'menu.custom.tasks': '任务清单',
 };

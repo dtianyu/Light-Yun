@@ -4,28 +4,24 @@ import {eapAppToken, formatDateTime} from "@/pages/comm";
 const url = '/api/eap/task';
 
 export async function queryList(params) {
-  console.log(params);
+  // console.log(params);
   let q;
   let f = '/f';
-  let s = '/s';
-  if (Object.keys(params).length === 2) {
-    f = `${f};status=N`;
-  } else {
-    if (params.executorId) {
-      f = `${f};executorId=${params.executorId}`;
-    }
-    if (params.status) {
-      f = `${f};status=${params.status}`;
-    }
+  let s = '/s;plannedStartDate=ASC;priority=ASC';
+
+  if (params.executorId) {
+    f = `${f};executorId=${params.executorId}`;
   }
-  if (params.current && params.pageSize) {
-    q = `${url}${f}${s}/${(params.current - 1) * params.pageSize}/${params.pageSize}`;
-  } else {
-    q = url
+  if (params.status) {
+    f = `${f};status=${params.status}`;
   }
+
+  q = `${url}/pagination${f}${s}`;
   const response = await request(q, {
     params: {
-      ...eapAppToken
+      ...eapAppToken,
+      offset: (params.current - 1) * params.pageSize,
+      pageSize: params.pageSize,
     },
   });
   const {code, data, count} = response;
@@ -35,6 +31,35 @@ export async function queryList(params) {
     success: code === '200',
     total: count,
   };
+}
+
+export async function queryRange(params) {
+  // console.log(params);
+  let q;
+  if (params.executorId) {
+    q = `${url}/executor/${params.executorId}/${params.range}/${params.number}`;
+    const response = await request(q, {
+      params: {
+        ...eapAppToken,
+        offset: (params.current - 1) * params.pageSize,
+        pageSize: params.pageSize,
+      },
+    });
+    const {code, data, count} = response;
+    return {
+      data,
+      page: params.current,
+      success: code === '200',
+      total: count,
+    };
+  } else {
+    return {
+      data: [],
+      page: params.current,
+      success: false,
+      total: 0,
+    };
+  }
 }
 
 export async function create(params) {

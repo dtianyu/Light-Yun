@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Form, Input, Switch, DatePicker, Button, Radio} from 'antd';
+import {Modal, Form, Input, Switch, DatePicker, TimePicker, Button, Radio} from 'antd';
 import {utcFormat} from "@/pages/comm";
 import SystemUser from "@/pages/modal/SystemUser";
 import Department from "@/pages/modal/Department";
-import SystemNameSelect from "@/pages/components/SystemNameSelect";
 
 const FormItem = Form.Item;
 const {TextArea} = Input;
@@ -50,9 +49,13 @@ const UpdateForm = props => {
             const values = {
               ...fieldsValue,
               'plannedStartDate': fieldsValue.plannedStartDate ? utcFormat(fieldsValue.plannedStartDate) : null,
+              'plannedStartTime': fieldsValue.plannedStartTime ? utcFormat(fieldsValue.plannedStartTime) : null,
               'plannedFinishDate': fieldsValue.plannedFinishDate ? utcFormat(fieldsValue.plannedFinishDate) : null,
+              'plannedFinishTime': fieldsValue.plannedFinishTime ? utcFormat(fieldsValue.plannedFinishTime) : null,
               'actualStartDate': fieldsValue.actualStartDate ? utcFormat(fieldsValue.actualStartDate) : null,
+              'actualStartTime': fieldsValue.actualStartTime ? utcFormat(fieldsValue.actualStartTime) : null,
               'actualFinishDate': fieldsValue.actualFinishDate ? utcFormat(fieldsValue.actualFinishDate) : null,
+              'actualFinishTime': fieldsValue.actualFinishTime ? utcFormat(fieldsValue.actualFinishTime) : null,
             }
             handleUpdate(values);
           })
@@ -137,25 +140,63 @@ const UpdateForm = props => {
               </FormItem>
             </Input.Group>
           </FormItem>
-          <FormItem
-            label="计划开始"
-            name="plannedStartDate">
-            <DatePicker disabled={readOnly}/>
+          <FormItem label="计划开始" style={{marginBottom: 0}} required={true}>
+            <Input.Group compact={true}>
+              <FormItem
+                name="plannedStartDate"
+                rules={[{required: true}]}
+              >
+                <DatePicker disabled={readOnly}/>
+              </FormItem>
+              <FormItem
+                name="plannedStartTime"
+                rules={[{required: true}]}
+              >
+                <TimePicker format={'HH:mm'} disabled={readOnly}/>
+              </FormItem>
+            </Input.Group>
           </FormItem>
-          <FormItem
-            label="计划完成"
-            name="plannedFinishDate">
-            <DatePicker disabled={readOnly}/>
+          <FormItem label="计划完成" style={{marginBottom: 0}} required={true}>
+            <Input.Group compact={true}>
+              <FormItem
+                name="plannedFinishDate"
+                rules={[{required: true}]}
+              >
+                <DatePicker disabled={readOnly}/>
+              </FormItem>
+              <FormItem
+                name="plannedFinishTime"
+                rules={[{required: true}]}
+              >
+                <TimePicker format={'HH:mm'} disabled={readOnly}/>
+              </FormItem>
+            </Input.Group>
           </FormItem>
-          <FormItem
-            label="实际开始"
-            name="actualStartDate">
-            <DatePicker disabled={readOnly}/>
+          <FormItem label="实际开始" style={{marginBottom: 0}}>
+            <Input.Group compact={true}>
+              <FormItem
+                name="actualStartDate">
+                <DatePicker disabled={readOnly}/>
+              </FormItem>
+              <FormItem
+                name="actualStartTime"
+              >
+                <TimePicker format={'HH:mm'} disabled={readOnly}/>
+              </FormItem>
+            </Input.Group>
           </FormItem>
-          <FormItem
-            label="实际完成"
-            name="actualFinishDate">
-            <DatePicker disabled={readOnly}/>
+          <FormItem label="实际完成" style={{marginBottom: 0}}>
+            <Input.Group compact={true}>
+              <FormItem
+                name="actualFinishDate">
+                <DatePicker disabled={readOnly}/>
+              </FormItem>
+              <FormItem
+                name="actualFinishTime"
+              >
+                <TimePicker format={'HH:mm'} disabled={readOnly}/>
+              </FormItem>
+            </Input.Group>
           </FormItem>
         </Form>
       </Modal>

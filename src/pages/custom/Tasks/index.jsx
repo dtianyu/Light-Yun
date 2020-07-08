@@ -1,5 +1,19 @@
 import {DownOutlined, PlusOutlined} from '@ant-design/icons';
-import {Avatar, Button, Card, Col, Dropdown, List, Menu, message, Modal, Progress, Row} from 'antd';
+import {
+  Avatar,
+  Button,
+  Card,
+  Col,
+  Dropdown,
+  List,
+  Menu,
+  message,
+  Modal,
+  notification,
+  Progress,
+  Radio,
+  Row
+} from 'antd';
 import React, {useState, useRef, useEffect} from 'react';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {connect} from 'umi';
@@ -9,7 +23,6 @@ import {utcDate} from "@/pages/comm";
 import * as PropTypes from "prop-types";
 import moment from "moment";
 import styles from "@/pages/custom/Tasks/style.less";
-
 
 // /**
 //  * 删除
@@ -34,14 +47,16 @@ import styles from "@/pages/custom/Tasks/style.less";
 //   }
 // };
 
+const RadioButton = Radio.Button;
+const RadioGroup = Radio.Group;
+
 const RowOperation = ({item, operate}) => (
   <Dropdown
     overlay={
-      <Menu onClick={async ({key}) => operate(key, item)}>
+      <Menu onClick={({key}) => operate(key, item)}>
         <Menu.Item key="0">查看</Menu.Item>
         {item.status !== 'V' ? (<Menu.Item key="e">修改</Menu.Item>) : null}
         {item.status !== 'V' ? (<Menu.Item key="d">删除</Menu.Item>) : null}
-        {item.status !== 'W' && item.status !== 'V' ? (<Menu.Item key="c">取消</Menu.Item>) : null}
         {item.status !== 'V' ? (<Menu.Item key="v">结案</Menu.Item>) : null}
         {item.status === 'V' ? (<Menu.Item key="r">还原</Menu.Item>) : null}
       </Menu>
@@ -66,7 +81,7 @@ const Info = ({title, value, bordered}) => (
   </div>
 );
 
-const ListContent = ({data: {executor, plannedStartDate, plannedFinishDate, status}}) => (
+const ListContent = ({data: {executor, plannedStartDate, plannedFinishDate, progress, status}}) => (
   <div className={styles.listContent}>
     <div className={styles.listContentItem}>
       <span>Owner</span>
@@ -80,7 +95,7 @@ const ListContent = ({data: {executor, plannedStartDate, plannedFinishDate, stat
     </div>
     <div className={styles.listContentItem}>
       <Progress
-        percent={80}
+        percent={progress}
         status={status}
         strokeWidth={6}
         style={{
@@ -99,14 +114,15 @@ const Tasks = props => {
   const [currentObject, setCurrentObject] = useState({});
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [range, setRange] = useState('N');
+  const [number, setNumber] = useState(1);
   const actionRef = useRef();
-  const addTaskBtn = useRef(null);
 
   const {currentUser, data, total, loading, dispatch,} = props;
 
-  const operate = async (key, item) => {
+  const operate = (key, item) => {
     const value = {...item};
-    const {formid} = item;
+    const {name} = item;
     let changed;
     switch (key) {
       case '0':
@@ -116,9 +132,13 @@ const Tasks = props => {
         setCurrentObject({
           ...item,
           'plannedStartDate': item.plannedStartDate ? moment(item.plannedStartDate) : null,
+          'plannedStartTime': item.plannedStartTime ? moment(item.plannedStartTime) : null,
           'plannedFinishDate': item.plannedFinishDate ? moment(item.plannedFinishDate) : null,
+          'plannedFinishTime': item.plannedFinishTime ? moment(item.plannedFinishTime) : null,
           'actualStartDate': item.actualStartDate ? moment(item.actualStartDate) : null,
+          'actualStartTime': item.actualStartTime ? moment(item.actualStartTime) : null,
           'actualFinishDate': item.actualFinishDate ? moment(item.actualFinishDate) : null,
+          'actualFinishTime': item.actualFinishTime ? moment(item.actualFinishTime) : null,
         });
         break;
       case 'e':
@@ -128,16 +148,20 @@ const Tasks = props => {
         setCurrentObject({
           ...item,
           'plannedStartDate': item.plannedStartDate ? moment(item.plannedStartDate) : null,
+          'plannedStartTime': item.plannedStartTime ? moment(item.plannedStartTime) : null,
           'plannedFinishDate': item.plannedFinishDate ? moment(item.plannedFinishDate) : null,
+          'plannedFinishTime': item.plannedFinishTime ? moment(item.plannedFinishTime) : null,
           'actualStartDate': item.actualStartDate ? moment(item.actualStartDate) : null,
+          'actualStartTime': item.actualStartTime ? moment(item.actualStartTime) : null,
           'actualFinishDate': item.actualFinishDate ? moment(item.actualFinishDate) : null,
+          'actualFinishTime': item.actualFinishTime ? moment(item.actualFinishTime) : null,
         });
         break;
       case 'd':
         // delete
         Modal.confirm({
           title: '删除',
-          content: `确定删除${formid}吗？`,
+          content: `确定删除${name}吗？`,
           okText: '确认',
           cancelText: '取消',
           onOk: async () => {
@@ -153,52 +177,37 @@ const Tasks = props => {
           }
         });
         break;
-      case 'c':
-        // cancel
-        changed = {
-          status: 'W',
-          optdate: moment.utc().format(),
-        };
-
-        Modal.confirm({
-          title: '取消',
-          content: `确定取消${formid}吗？`,
-          okText: '确认',
-          cancelText: '取消',
-          onOk: async () => {
-            const success = await handleUpdate({...value, ...changed});
-
-            if (success) {
-              setCurrentObject({});
-
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }
-        });
-        break;
       case 'v':
         // verify
-        value.status = 'V';
+        if (value.actualStartDate && value.actualStartTime) {
+          value.status = 'V';
+          value.actualFinishDate = moment.utc().format();
+          value.actualFinishTime = moment.utc().format();
 
-        Modal.confirm({
-          title: '确认',
-          content: `确定结案${formid}吗？`,
-          okText: '确认',
-          cancelText: '取消',
-          onOk: async () => {
-            const success = await handleUpdate({...value});
+          Modal.confirm({
+            title: '确认',
+            content: `确定结案${name}吗？`,
+            okText: '确认',
+            cancelText: '取消',
+            onOk: async () => {
+              const success = await handleUpdate({...value});
 
-            if (success) {
-              setCurrentObject({});
+              if (success) {
+                setCurrentObject({});
 
-              if (actionRef.current) {
-                actionRef.current.reload();
+                if (actionRef.current) {
+                  actionRef.current.reload();
+                }
               }
             }
-          }
-        });
+          });
+        } else {
+          notification["error"]({
+            message: '系统提示',
+            description:
+              '实际完成时间不可空.',
+          });
+        }
         break;
       case 'r':
         // revoke
@@ -206,7 +215,7 @@ const Tasks = props => {
 
         Modal.confirm({
           title: '还原',
-          content: `确定还原${formid}吗？`,
+          content: `确定还原${name}吗？`,
           okText: '确认',
           cancelText: '取消',
           onOk: async () => {
@@ -230,17 +239,34 @@ const Tasks = props => {
 
   useEffect(() => {
     if (currentUser && dispatch) {
+      handleFetch({current: page, pageSize: pageSize, status: 'N'});
+    }
+  }, []);
+
+  /**
+   * 查询
+   */
+  const handleFetch = (filters) => {
+    const {range, number} = filters;
+    // console.log(range);
+    if (range && range !== 'all' && range !== 'progress') {
       dispatch({
-        type: 'tasksModel/fetch',
+        type: 'tasksModel/fetchRange',
         payload: {
           executorId: currentUser.userid,
-          status: 'N',
-          current: page,
-          pageSize: pageSize,
+          ...filters,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'tasksModel/fetchList',
+        payload: {
+          executorId: currentUser.userid,
+          ...filters,
         },
       });
     }
-  }, []);
+  }
 
   /**
    * 添加
@@ -253,11 +279,13 @@ const Tasks = props => {
         type: 'tasksModel/add',
         payload: {
           data: fields,
-          pagination: {
-            executorId: currentUser.userId,
+          params: {
+            executorId: currentUser.userid,
             status: 'N',
             current: page,
             pageSize: pageSize,
+            range: range,
+            number: number,
           },
         }
       });
@@ -279,11 +307,13 @@ const Tasks = props => {
         type: 'tasksModel/update',
         payload: {
           data: fields,
-          pagination: {
-            executorId: currentUser.userId,
+          params: {
+            executorId: currentUser.userid,
             status: 'N',
             current: page,
             pageSize: pageSize,
+            range: range,
+            number: number,
           },
         }
       });
@@ -293,6 +323,42 @@ const Tasks = props => {
       return false;
     }
   };
+
+  const handleChange = e => {
+    switch (e.target.value) {
+      case 'all':
+        setRange('all');
+        handleFetch({current: page, pageSize: pageSize});
+        break;
+      case 'progress':
+        setRange('progress');
+        handleFetch({current: page, pageSize: pageSize, status: 'N'});
+        break;
+      case 'nextWeek':
+        setRange('next_weeks');
+        setNumber(1);
+        handleFetch({current: 1, pageSize: pageSize, range: 'next_weeks', number: 1});
+        break;
+      case 'nextTwoWeeks':
+        setRange('next_weeks');
+        setNumber(2);
+        handleFetch({current: 1, pageSize: pageSize, range: 'next_weeks', number: 2});
+        break;
+      default:
+        handleFetch({current: page, pageSize: pageSize, status: 'N'});
+    }
+  };
+
+  const extraContent = (
+    <div className={styles.extraContent}>
+      <RadioGroup onChange={handleChange} defaultValue="progress">
+        <RadioButton value="nextWeek">下一周</RadioButton>
+        <RadioButton value="nextTwoWeeks">下两周</RadioButton>
+        <RadioButton value="progress">进行中</RadioButton>
+        <RadioButton value="all">所有的</RadioButton>
+      </RadioGroup>
+    </div>
+  );
 
   return (
     <div>
@@ -321,6 +387,7 @@ const Tasks = props => {
             bodyStyle={{
               padding: '0 32px 40px 32px',
             }}
+            extra={extraContent}
           >
             <Button
               type="dashed"
@@ -348,10 +415,24 @@ const Tasks = props => {
                 onChange: (page, pageSize) => {
                   setPage(page);
                   setPageSize(pageSize);
+                  if (range === 'all') {
+                    handleFetch({current: page, pageSize: pageSize});
+                  } else if (range === 'progress') {
+                    handleFetch({current: page, pageSize: pageSize, status: 'N'});
+                  } else {
+                    handleFetch({current: page, pageSize: pageSize, range: range, number: number});
+                  }
                 },
                 onShowSizeChange: (current, size) => {
                   setPage(current);
                   setPageSize(size);
+                  if (range === 'all') {
+                    handleFetch({current: current, pageSize: size});
+                  } else if (range === 'progress') {
+                    handleFetch({current: current, pageSize: size, status: 'N'});
+                  } else {
+                    handleFetch({current: current, pageSize: size, range: range, number: number});
+                  }
                 },
               }}
               dataSource={data}
@@ -396,10 +477,6 @@ const Tasks = props => {
             if (success) {
               setUpdateModalVisible(false);
               setCurrentObject({});
-
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
             }
           }}
           onCancel={() => {
