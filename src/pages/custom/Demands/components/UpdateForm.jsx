@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, Switch, DatePicker, Button, Radio} from 'antd';
-import {utcFormat} from "@/pages/comm";
+import {local2UTC} from "@/pages/comm";
 import SystemUser from "@/pages/modal/SystemUser";
 import Department from "@/pages/modal/Department";
 import SystemNameSelect from "@/pages/components/SystemNameSelect";
@@ -56,10 +56,10 @@ const UpdateForm = props => {
             // console.log(fieldsValue);
             const values = {
               ...fieldsValue,
-              'planStartDate': fieldsValue.planStartDate ? utcFormat(fieldsValue.planStartDate) : null,
-              'planOverDate': fieldsValue.planOverDate ? utcFormat(fieldsValue.planOverDate) : null,
-              'realStartDate': fieldsValue.realStartDate ? utcFormat(fieldsValue.realStartDate) : null,
-              'realOverDate': fieldsValue.realOverDate ? utcFormat(fieldsValue.realOverDate) : null,
+              'planStartDate': fieldsValue.planStartDate ? local2UTC(fieldsValue.planStartDate) : null,
+              'planOverDate': fieldsValue.planOverDate ? local2UTC(fieldsValue.planOverDate) : null,
+              'realStartDate': fieldsValue.realStartDate ? local2UTC(fieldsValue.realStartDate) : null,
+              'realOverDate': fieldsValue.realOverDate ? local2UTC(fieldsValue.realOverDate) : null,
             }
             handleUpdate(values);
           })
@@ -193,10 +193,10 @@ const UpdateForm = props => {
               // console.log(fieldsValue);
               const values = {
                 ...fieldsValue,
-                'planStartDate': fieldsValue.planStartDate ? utcFormat(fieldsValue.planStartDate) : null,
-                'planOverDate': fieldsValue.planOverDate ? utcFormat(fieldsValue.planOverDate) : null,
-                'realStartDate': fieldsValue.realStartDate ? utcFormat(fieldsValue.realStartDate) : null,
-                'realOverDate': fieldsValue.realOverDate ? utcFormat(fieldsValue.realOverDate) : null,
+                'planStartDate': fieldsValue.planStartDate ? local2UTC(fieldsValue.planStartDate) : null,
+                'planOverDate': fieldsValue.planOverDate ? local2UTC(fieldsValue.planOverDate) : null,
+                'realStartDate': fieldsValue.realStartDate ? local2UTC(fieldsValue.realStartDate) : null,
+                'realOverDate': fieldsValue.realOverDate ? local2UTC(fieldsValue.realOverDate) : null,
               }
               syncTask(values);
             })

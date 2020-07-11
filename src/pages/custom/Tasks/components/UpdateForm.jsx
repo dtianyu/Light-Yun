@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Form, Input, Switch, DatePicker, TimePicker, Button, Radio} from 'antd';
-import {utcFormat} from "@/pages/comm";
+import {Modal, Form, Input, Switch, DatePicker, TimePicker, Button, Radio, Slider} from 'antd';
+import {local2UTC} from "@/pages/comm";
 import SystemUser from "@/pages/modal/SystemUser";
 import Department from "@/pages/modal/Department";
 
@@ -11,8 +11,17 @@ const UpdateForm = props => {
 
   const [deptModalVisible, setDeptModalVisible] = useState(false);
   const [userModalVisible, setUserModalVisible] = useState(false);
+  const [finished, setFinished] = useState(false);
 
   const [form] = Form.useForm();
+
+  const progressChanged = value => {
+    if (!isNaN(value) && value === 100) {
+      setFinished(true);
+    } else {
+      setFinished(false);
+    }
+  }
 
   const {modalVisible, modalWidth, onFinish: handleUpdate, onCancel, values, readOnly} = props;
 
@@ -48,14 +57,14 @@ const UpdateForm = props => {
             // console.log(fieldsValue);
             const values = {
               ...fieldsValue,
-              'plannedStartDate': fieldsValue.plannedStartDate ? utcFormat(fieldsValue.plannedStartDate) : null,
-              'plannedStartTime': fieldsValue.plannedStartTime ? utcFormat(fieldsValue.plannedStartTime) : null,
-              'plannedFinishDate': fieldsValue.plannedFinishDate ? utcFormat(fieldsValue.plannedFinishDate) : null,
-              'plannedFinishTime': fieldsValue.plannedFinishTime ? utcFormat(fieldsValue.plannedFinishTime) : null,
-              'actualStartDate': fieldsValue.actualStartDate ? utcFormat(fieldsValue.actualStartDate) : null,
-              'actualStartTime': fieldsValue.actualStartTime ? utcFormat(fieldsValue.actualStartTime) : null,
-              'actualFinishDate': fieldsValue.actualFinishDate ? utcFormat(fieldsValue.actualFinishDate) : null,
-              'actualFinishTime': fieldsValue.actualFinishTime ? utcFormat(fieldsValue.actualFinishTime) : null,
+              'plannedStartDate': fieldsValue.plannedStartDate ? local2UTC(fieldsValue.plannedStartDate) : null,
+              'plannedStartTime': fieldsValue.plannedStartTime ? local2UTC(fieldsValue.plannedStartTime) : null,
+              'plannedFinishDate': fieldsValue.plannedFinishDate ? local2UTC(fieldsValue.plannedFinishDate) : null,
+              'plannedFinishTime': fieldsValue.plannedFinishTime ? local2UTC(fieldsValue.plannedFinishTime) : null,
+              'actualStartDate': fieldsValue.actualStartDate ? local2UTC(fieldsValue.actualStartDate) : null,
+              'actualStartTime': fieldsValue.actualStartTime ? local2UTC(fieldsValue.actualStartTime) : null,
+              'actualFinishDate': fieldsValue.actualFinishDate ? local2UTC(fieldsValue.actualFinishDate) : null,
+              'actualFinishTime': fieldsValue.actualFinishTime ? local2UTC(fieldsValue.actualFinishTime) : null,
             }
             handleUpdate(values);
           })
@@ -82,7 +91,6 @@ const UpdateForm = props => {
           >
             <TextArea placeholder="任务描述" rows={4} disabled={readOnly}/>
           </FormItem>
-
           <FormItem
             label="紧急度"
             name="priority"
@@ -189,14 +197,23 @@ const UpdateForm = props => {
             <Input.Group compact={true}>
               <FormItem
                 name="actualFinishDate">
-                <DatePicker disabled={readOnly}/>
+                <DatePicker disabled={readOnly || !finished}/>
               </FormItem>
               <FormItem
                 name="actualFinishTime"
               >
-                <TimePicker format={'HH:mm'} disabled={readOnly}/>
+                <TimePicker format={'HH:mm'} disabled={readOnly || !finished}/>
               </FormItem>
             </Input.Group>
+          </FormItem>
+          <FormItem label="实际进度" name="progress">
+            <Slider
+              min={0}
+              max={100}
+              onChange={progressChanged}
+              tooltipVisible
+              disabled={readOnly}
+            />
           </FormItem>
         </Form>
       </Modal>

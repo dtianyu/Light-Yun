@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, DatePicker, Button, Radio} from 'antd';
-import {utcFormat} from "@/pages/comm";
+import {local2UTC} from "@/pages/comm";
 import SystemUser from "@/pages/modal/SystemUser";
 import * as moment from "moment";
 import Department from "@/pages/modal/Department";
@@ -53,7 +53,7 @@ const CreateForm = props => {
               ...fieldsValue,
               'formid': '',
               'formdate': moment.utc().format(),
-              'demandDate': fieldsValue.demandDate ? utcFormat(fieldsValue.demandDate) : null,
+              'demandDate': fieldsValue.demandDate ? local2UTC(fieldsValue.demandDate) : null,
               'status': 'N',
             }
             handleAdd(values);

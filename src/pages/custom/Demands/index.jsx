@@ -6,7 +6,7 @@ import ProTable from '@ant-design/pro-table';
 import {queryList, add, update, remove, syncTask} from './service';
 import CreateForm from './components/CreateForm';
 import UpdateForm from "./components/UpdateForm";
-import {utcDate} from "@/pages/comm";
+import {utc2Local} from "@/pages/comm";
 import * as PropTypes from "prop-types";
 import moment from "moment";
 
@@ -150,10 +150,10 @@ const Demands = () => {
         setModalReadOnly(true);
         setCurrentObject({
           ...item,
-          'planStartDate': item.planStartDate ? moment(item.planStartDate) : null,
-          'planOverDate': item.planOverDate ? moment(item.planOverDate) : null,
-          'realStartDate': item.realStartDate ? moment(item.realStartDate) : null,
-          'realOverDate': item.realOverDate ? moment(item.realOverDate) : null,
+          'planStartDate': item.planStartDate ? utc2Local(item.planStartDate) : null,
+          'planOverDate': item.planOverDate ? utc2Local(item.planOverDate) : null,
+          'realStartDate': item.realStartDate ? utc2Local(item.realStartDate) : null,
+          'realOverDate': item.realOverDate ? utc2Local(item.realOverDate) : null,
         });
         break;
       case 'e':
@@ -162,10 +162,10 @@ const Demands = () => {
         setModalReadOnly(false);
         setCurrentObject({
           ...item,
-          'planStartDate': item.planStartDate ? moment(item.planStartDate) : null,
-          'planOverDate': item.planOverDate ? moment(item.planOverDate) : null,
-          'realStartDate': item.realStartDate ? moment(item.realStartDate) : null,
-          'realOverDate': item.realOverDate ? moment(item.realOverDate) : null,
+          'planStartDate': item.planStartDate ? utc2Local(item.planStartDate) : null,
+          'planOverDate': item.planOverDate ? utc2Local(item.planOverDate) : null,
+          'realStartDate': item.realStartDate ? utc2Local(item.realStartDate) : null,
+          'realOverDate': item.realOverDate ? utc2Local(item.realOverDate) : null,
         });
         break;
       case 'd':
@@ -339,7 +339,7 @@ const Demands = () => {
       dataIndex: 'formdate',
       valueType: 'dateRange',
       render: (_, item) => (
-        item.formdate ? <span>{utcDate(item.formdate)}</span> : null
+        item.formdate ? <span>{utc2Local(item.formdate, {localFormat: 'YYYY-MM-DD'})}</span> : null
       ),
       order: 100,
     },
@@ -372,6 +372,9 @@ const Demands = () => {
       dataIndex: 'demandDate',
       valueType: 'date',
       hideInSearch: true,
+      render: (_, item) => (
+        item.demandDate ? <span>{utc2Local(item.demandDate, {localFormat: 'YYYY-MM-DD'})}</span> : null
+      ),
     },
     {
       title: '紧急度',
@@ -411,13 +414,16 @@ const Demands = () => {
       dataIndex: 'planStartDate',
       valueType: 'date',
       hideInSearch: true,
+      render: (_, item) => (
+        item.planStartDate ? <span>{utc2Local(item.planStartDate, {localFormat: 'YYYY-MM-DD'})}</span> : null
+      ),
     },
     {
       title: '计划完成',
       dataIndex: 'planOverDate',
       valueType: 'dateRange',
       render: (_, item) => (
-        item.planOverDate ? <span>{utcDate(item.planOverDate)}</span> : null
+        item.planOverDate ? <span>{utc2Local(item.planOverDate, {localFormat: 'YYYY-MM-DD'})}</span> : null
       ),
     },
     {
@@ -425,13 +431,16 @@ const Demands = () => {
       dataIndex: 'realStartDate',
       valueType: 'date',
       hideInSearch: true,
+      render: (_, item) => (
+        item.realStartDate ? <span>{utc2Local(item.realStartDate, {localFormat: 'YYYY-MM-DD'})}</span> : null
+      ),
     },
     {
       title: '实际完成',
       dataIndex: 'realOverDate',
       valueType: 'dateRange',
       render: (_, item) => (
-        item.realOverDate ? <span>{utcDate(item.realOverDate)}</span> : null
+        item.realOverDate ? <span>{utc2Local(item.realOverDate, {localFormat: 'YYYY-MM-DD'})}</span> : null
       ),
       order: 90,
     },

@@ -6,6 +6,7 @@ import moment from 'moment';
 import Radar from './components/Radar';
 import EditableLinkGroup from './components/EditableLinkGroup';
 import styles from './style.less';
+import {utc2Local} from "@/pages/comm";
 
 const links = [
   {
@@ -108,9 +109,9 @@ class Workplace extends Component {
             <span>
               <a className={styles.username}>{item.name}</a>
               &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles.datetime}>{moment(item.plannedStartDate).format("YYYY-MM-DD")}</span>
+              <span className={styles.datetime}>{utc2Local(item.plannedStartDate, {localFormat: "YYYY-MM-DD"})}</span>
               -
-              <span className={styles.datetime}>{moment(item.plannedFinishDate).format("YYYY-MM-DD")}</span>
+              <span className={styles.datetime}>{utc2Local(item.plannedFinishDate, {localFormat: "YYYY-MM-DD"})}</span>
             </span>
           }
           description={

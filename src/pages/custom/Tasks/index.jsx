@@ -19,7 +19,7 @@ import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {connect} from 'umi';
 import CreateForm from './components/CreateForm';
 import UpdateForm from "./components/UpdateForm";
-import {utcDate} from "@/pages/comm";
+import {utc2Local} from "@/pages/comm";
 import * as PropTypes from "prop-types";
 import moment from "moment";
 import styles from "@/pages/custom/Tasks/style.less";
@@ -81,17 +81,13 @@ const Info = ({title, value, bordered}) => (
   </div>
 );
 
-const ListContent = ({data: {executor, plannedStartDate, plannedFinishDate, progress, status}}) => (
+const ListContent = ({data: {plannedStartDate, plannedFinishDate, actualStartDate, actualFinishDate, progress, status}}) => (
   <div className={styles.listContent}>
     <div className={styles.listContentItem}>
-      <span>Owner</span>
-      <p>{executor}</p>
-    </div>
-    <div className={styles.listContentItem}>
       <span>计划开始时间</span>
-      <p>{utcDate(plannedStartDate)}</p>
+      <p>{utc2Local(plannedStartDate, {localFormat: 'YYYY-MM-DD'})}</p>
       <span>计划完成时间</span>
-      <p>{utcDate(plannedFinishDate)}</p>
+      <p>{utc2Local(plannedFinishDate, {localFormat: 'YYYY-MM-DD'})}</p>
     </div>
     <div className={styles.listContentItem}>
       <Progress
@@ -99,9 +95,15 @@ const ListContent = ({data: {executor, plannedStartDate, plannedFinishDate, prog
         status={status}
         strokeWidth={6}
         style={{
-          width: 160,
+          width: 120,
         }}
       />
+    </div>
+    <div className={styles.listContentItem}>
+      <span>实际开始时间</span>
+      <p>{actualStartDate ? utc2Local(actualStartDate, {localFormat: 'YYYY-MM-DD'}) : 'null'}</p>
+      <span>实际完成时间</span>
+      <p>{actualFinishDate ? utc2Local(actualFinishDate, {localFormat: 'YYYY-MM-DD'}) : 'null'}</p>
     </div>
   </div>
 );
@@ -114,7 +116,7 @@ const Tasks = props => {
   const [currentObject, setCurrentObject] = useState({});
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [range, setRange] = useState('N');
+  const [range, setRange] = useState('progress');
   const [number, setNumber] = useState(1);
   const actionRef = useRef();
 
@@ -131,14 +133,14 @@ const Tasks = props => {
         setModalReadOnly(true);
         setCurrentObject({
           ...item,
-          'plannedStartDate': item.plannedStartDate ? moment(item.plannedStartDate) : null,
-          'plannedStartTime': item.plannedStartTime ? moment(item.plannedStartTime) : null,
-          'plannedFinishDate': item.plannedFinishDate ? moment(item.plannedFinishDate) : null,
-          'plannedFinishTime': item.plannedFinishTime ? moment(item.plannedFinishTime) : null,
-          'actualStartDate': item.actualStartDate ? moment(item.actualStartDate) : null,
-          'actualStartTime': item.actualStartTime ? moment(item.actualStartTime) : null,
-          'actualFinishDate': item.actualFinishDate ? moment(item.actualFinishDate) : null,
-          'actualFinishTime': item.actualFinishTime ? moment(item.actualFinishTime) : null,
+          'plannedStartDate': item.plannedStartDate ? utc2Local(item.plannedStartDate) : null,
+          'plannedStartTime': item.plannedStartTime ? utc2Local(item.plannedStartTime) : null,
+          'plannedFinishDate': item.plannedFinishDate ? utc2Local(item.plannedFinishDate) : null,
+          'plannedFinishTime': item.plannedFinishTime ? utc2Local(item.plannedFinishTime) : null,
+          'actualStartDate': item.actualStartDate ? utc2Local(item.actualStartDate) : null,
+          'actualStartTime': item.actualStartTime ? utc2Local(item.actualStartTime) : null,
+          'actualFinishDate': item.actualFinishDate ? utc2Local(item.actualFinishDate) : null,
+          'actualFinishTime': item.actualFinishTime ? utc2Local(item.actualFinishTime) : null,
         });
         break;
       case 'e':
@@ -147,14 +149,14 @@ const Tasks = props => {
         setModalReadOnly(false);
         setCurrentObject({
           ...item,
-          'plannedStartDate': item.plannedStartDate ? moment(item.plannedStartDate) : null,
-          'plannedStartTime': item.plannedStartTime ? moment(item.plannedStartTime) : null,
-          'plannedFinishDate': item.plannedFinishDate ? moment(item.plannedFinishDate) : null,
-          'plannedFinishTime': item.plannedFinishTime ? moment(item.plannedFinishTime) : null,
-          'actualStartDate': item.actualStartDate ? moment(item.actualStartDate) : null,
-          'actualStartTime': item.actualStartTime ? moment(item.actualStartTime) : null,
-          'actualFinishDate': item.actualFinishDate ? moment(item.actualFinishDate) : null,
-          'actualFinishTime': item.actualFinishTime ? moment(item.actualFinishTime) : null,
+          'plannedStartDate': item.plannedStartDate ? utc2Local(item.plannedStartDate) : null,
+          'plannedStartTime': item.plannedStartTime ? utc2Local(item.plannedStartTime) : null,
+          'plannedFinishDate': item.plannedFinishDate ? utc2Local(item.plannedFinishDate) : null,
+          'plannedFinishTime': item.plannedFinishTime ? utc2Local(item.plannedFinishTime) : null,
+          'actualStartDate': item.actualStartDate ? utc2Local(item.actualStartDate) : null,
+          'actualStartTime': item.actualStartTime ? utc2Local(item.actualStartTime) : null,
+          'actualFinishDate': item.actualFinishDate ? utc2Local(item.actualFinishDate) : null,
+          'actualFinishTime': item.actualFinishTime ? utc2Local(item.actualFinishTime) : null,
         });
         break;
       case 'd':
@@ -302,6 +304,10 @@ const Tasks = props => {
    */
   const handleUpdate = fields => {
     message.loading('正在更新');
+    const {progress} = fields;
+    if (progress && progress === 100) {
+      fields.status = 'V';
+    }
     try {
       dispatch({
         type: 'tasksModel/update',
@@ -444,7 +450,10 @@ const Tasks = props => {
                 >
                   <List.Item.Meta
                     avatar={<Avatar src={item.logo} shape="square" size="large"/>}
-                    title={<a href={item.href}>{item.name}</a>}
+                    title={
+                      <a href={item.href}>{item.name}
+                        <span style={{marginLeft: 20}}>执行人:{item.executor}</span>
+                      </a>}
                     description={item.description}
                   />
                   <ListContent data={item}/>

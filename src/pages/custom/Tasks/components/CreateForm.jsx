@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Form, Input, DatePicker, Button, Radio} from 'antd';
-import {utcFormat} from "@/pages/comm";
+import {Modal, Form, Input, DatePicker, Button, Radio, TimePicker} from 'antd';
+import {local2UTC} from "@/pages/comm";
 import SystemUser from "@/pages/modal/SystemUser";
 import Department from "@/pages/modal/Department";
 import * as moment from "moment";
@@ -49,8 +49,10 @@ const CreateForm = props => {
             // console.log(fieldsValue);
             const values = {
               ...fieldsValue,
-              'plannedStartDate': fieldsValue.plannedStartDate ? utcFormat(fieldsValue.plannedStartDate) : null,
-              'plannedFinishDate': fieldsValue.plannedFinishDate ? utcFormat(fieldsValue.plannedFinishDate) : null,
+              'plannedStartDate': fieldsValue.plannedStartDate ? local2UTC(fieldsValue.plannedStartDate) : null,
+              'plannedStartTime': fieldsValue.plannedStartTime ? local2UTC(fieldsValue.plannedStartTime) : null,
+              'plannedFinishDate': fieldsValue.plannedFinishDate ? local2UTC(fieldsValue.plannedFinishDate) : null,
+              'plannedFinishTime': fieldsValue.plannedFinishTime ? local2UTC(fieldsValue.plannedFinishTime) : null,
               'status': 'N',
             }
             handleAdd(values);
@@ -134,19 +136,37 @@ const CreateForm = props => {
               </FormItem>
             </Input.Group>
           </FormItem>
-          <FormItem
-            label="计划开始"
-            name="plannedStartDate"
-            rules={[{required: true}]}
-          >
-            <DatePicker/>
+          <FormItem label="计划开始" style={{marginBottom: 0}} required={true}>
+            <Input.Group compact={true}>
+              <FormItem
+                name="plannedStartDate"
+                rules={[{required: true}]}
+              >
+                <DatePicker/>
+              </FormItem>
+              <FormItem
+                name="plannedStartTime"
+                rules={[{required: true}]}
+              >
+                <TimePicker format={'HH:mm'}/>
+              </FormItem>
+            </Input.Group>
           </FormItem>
-          <FormItem
-            label="计划完成"
-            name="plannedFinishDate"
-            rules={[{required: true}]}
-          >
-            <DatePicker/>
+          <FormItem label="计划完成" style={{marginBottom: 0}} required={true}>
+            <Input.Group compact={true}>
+              <FormItem
+                name="plannedFinishDate"
+                rules={[{required: true}]}
+              >
+                <DatePicker/>
+              </FormItem>
+              <FormItem
+                name="plannedFinishTime"
+                rules={[{required: true}]}
+              >
+                <TimePicker format={'HH:mm'}/>
+              </FormItem>
+            </Input.Group>
           </FormItem>
         </Form>
       </Modal>

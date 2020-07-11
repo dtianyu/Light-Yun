@@ -22,10 +22,14 @@ export function formatDateTime(value, format) {
   return moment(date).format(format ? format : dateFormat);
 }
 
-export function utcDate(value) {
-  return moment(value, 'YYYY-MM-DDTHH:mm:ssZ').format("YYYY-MM-DD")
+export function utc2Local(value, {length = 20, utcFormat = 'YYYY-MM-DDTHH:mm:ssZ', localFormat} = {}) {
+  if (localFormat) {
+    return moment(value.substring(0, length), utcFormat).format(localFormat);
+  } else {
+    return moment(value.substring(0, length), utcFormat);
+  }
 }
 
-export function utcFormat(date) {
+export function local2UTC(date) {
   return moment.utc(date).format();
 }
