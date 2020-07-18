@@ -3,6 +3,27 @@ import {eapAppToken} from "@/pages/comm";
 
 const url = '/api/eap/task';
 
+export async function queryProgress(params) {
+  // console.log(params);
+  let q;
+  if (params.executorId) {
+    q = `${url}/executor/${params.executorId}/progress`;
+    const response = await request(q, {
+      params: {
+        ...eapAppToken,
+      },
+    });
+    const {code, object} = response;
+    return {
+      progress: object,
+    };
+  } else {
+    return {
+      progress: {},
+    };
+  }
+}
+
 export async function queryList(params) {
   // console.log(params);
   let q;

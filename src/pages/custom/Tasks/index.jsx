@@ -121,6 +121,7 @@ const Tasks = props => {
   const actionRef = useRef();
 
   const {currentUser, data, total, loading, dispatch,} = props;
+  const {progress: {thisYearFinished, thisMonthFinished, unfinished}} = props;
 
   const operate = (key, item) => {
     const value = {...item};
@@ -157,6 +158,7 @@ const Tasks = props => {
           'actualStartTime': item.actualStartTime ? utc2Local(item.actualStartTime) : null,
           'actualFinishDate': item.actualFinishDate ? utc2Local(item.actualFinishDate) : null,
           'actualFinishTime': item.actualFinishTime ? utc2Local(item.actualFinishTime) : null,
+          'status': item.progress === 100 ? 'V' : 'N',
         });
         break;
       case 'd':
@@ -213,7 +215,7 @@ const Tasks = props => {
         break;
       case 'r':
         // revoke
-        value.status = 'Y';
+        value.status = 'N';
 
         Modal.confirm({
           title: '还原',
@@ -242,14 +244,25 @@ const Tasks = props => {
   useEffect(() => {
     if (currentUser && dispatch) {
       handleFetch({current: page, pageSize: pageSize, status: 'N'});
+      fetchProgress();
+
     }
   }, []);
+
+  const fetchProgress = () => {
+    dispatch({
+      type: 'tasksModel/fetchProgress',
+      payload: {
+        executorId: currentUser.userid,
+      },
+    });
+  }
 
   /**
    * 查询
    */
   const handleFetch = (filters) => {
-    const {range, number} = filters;
+    const {range} = filters;
     // console.log(range);
     if (range && range !== 'all' && range !== 'progress') {
       dispatch({
@@ -304,10 +317,6 @@ const Tasks = props => {
    */
   const handleUpdate = fields => {
     message.loading('正在更新');
-    const {progress} = fields;
-    if (progress && progress === 100) {
-      fields.status = 'V';
-    }
     try {
       dispatch({
         type: 'tasksModel/update',
@@ -330,7 +339,7 @@ const Tasks = props => {
     }
   };
 
-  const handleChange = e => {
+  const handleRangeChange = e => {
     switch (e.target.value) {
       case 'all':
         setRange('all');
@@ -350,6 +359,16 @@ const Tasks = props => {
         setNumber(2);
         handleFetch({current: 1, pageSize: pageSize, range: 'next_weeks', number: 2});
         break;
+      case 'pastWeek':
+        setRange('past_weeks');
+        setNumber(1);
+        handleFetch({current: 1, pageSize: pageSize, range: 'past_weeks', number: 1});
+        break;
+      case 'pastTwoWeeks':
+        setRange('past_weeks');
+        setNumber(2);
+        handleFetch({current: 1, pageSize: pageSize, range: 'past_weeks', number: 2});
+        break;
       default:
         handleFetch({current: page, pageSize: pageSize, status: 'N'});
     }
@@ -357,10 +376,12 @@ const Tasks = props => {
 
   const extraContent = (
     <div className={styles.extraContent}>
-      <RadioGroup onChange={handleChange} defaultValue="progress">
+      <RadioGroup onChange={handleRangeChange} defaultValue="progress">
         <RadioButton value="nextWeek">下一周</RadioButton>
         <RadioButton value="nextTwoWeeks">下两周</RadioButton>
         <RadioButton value="progress">进行中</RadioButton>
+        <RadioButton value="pastWeek">上一周</RadioButton>
+        <RadioButton value="pastTwoWeeks">上两周</RadioButton>
         <RadioButton value="all">所有的</RadioButton>
       </RadioGroup>
     </div>
@@ -373,13 +394,13 @@ const Tasks = props => {
           <Card bordered={false}>
             <Row>
               <Col sm={8} xs={24}>
-                <Info title="我的待办" value="8个任务" bordered/>
+                {unfinished ? <Info title="我的待办任务" value={unfinished + "个"} bordered/> : null}
               </Col>
               <Col sm={8} xs={24}>
-                <Info title="本月完成任务" value="7个" bordered/>
+                {thisMonthFinished ? <Info title="本月完成任务" value={thisMonthFinished + "个"} bordered/> : null}
               </Col>
               <Col sm={8} xs={24}>
-                <Info title="今年完成任务" value="221个任务"/>
+                {thisYearFinished ? <Info title="今年完成任务" value={thisYearFinished + "个"}/> : null}
               </Col>
             </Row>
           </Card>
@@ -506,5 +527,6 @@ export default connect(({user, tasksModel, loading}) => ({
   currentUser: user.currentUser,
   data: tasksModel.data,
   total: tasksModel.total,
-  loading: loading.effects['tasksModel/fetch'],
+  progress: tasksModel.progress,
+  loading: loading.effects['tasksModel/fetchList'] || loading.effects['tasksModel/fetchRange'],
 }))(Tasks);

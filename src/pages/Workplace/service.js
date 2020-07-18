@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import {eapAppToken, formatDateTime} from "@/pages/comm";
+import {eapAppToken} from "@/pages/comm";
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');
@@ -17,7 +17,7 @@ export async function queryTask(params) {
   if (params.status) {
     f = `${f};status=${params.status}`;
   }
-  q = `${url}${f}${s}/0/5`;
+  q = `${url}${f}${s}/0/8`;
   // console.log(q);
   const response = await request(q, {
     params: {
@@ -53,10 +53,4 @@ export async function queryChartData(params) {
       radarData: [],
     };
   }
-
-
-}
-
-export async function fakeChartData() {
-  return request('/api/fake_chart_data');
 }

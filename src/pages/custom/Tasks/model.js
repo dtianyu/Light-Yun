@@ -1,4 +1,4 @@
-import {queryList, create, update, queryRange} from "./service";
+import {create, update, queryList, queryProgress, queryRange} from "./service";
 import {message} from "antd";
 
 const Model = {
@@ -6,6 +6,7 @@ const Model = {
   state: {
     data: [],
     total: 0,
+    progress: {},
   },
   effects: {
     * fetchList({payload}, {call, put}) {
@@ -21,6 +22,14 @@ const Model = {
       const response = yield call(queryRange, payload);
       yield put({
         type: 'query',
+        payload: response ? response : {},
+      });
+    },
+    * fetchProgress({payload}, {call, put}) {
+      // console.log(payload);
+      const response = yield call(queryProgress, payload);
+      yield put({
+        type: 'progress',
         payload: response ? response : {},
       });
     },
@@ -40,6 +49,10 @@ const Model = {
             payload: payload.params
           });
         }
+        yield put({
+          type: 'fetchProgress',
+          payload: payload.params
+        })
         message.success('新增成功');
       } else {
         message.error(msg);
@@ -61,6 +74,10 @@ const Model = {
             payload: payload.params
           });
         }
+        yield put({
+          type: 'fetchProgress',
+          payload: payload.params
+        })
         message.success('更新成功');
       } else {
         message.error(msg);
@@ -71,6 +88,9 @@ const Model = {
     query(state, {payload}) {
       return {...state, data: payload.data, total: payload.total,};
     },
+    progress(state, {payload}) {
+      return {...state, progress: payload.progress,}
+    }
   },
 };
 

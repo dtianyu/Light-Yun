@@ -109,9 +109,9 @@ class Workplace extends Component {
             <span>
               <a className={styles.username}>{item.name}</a>
               &nbsp;&nbsp;&nbsp;&nbsp;
-              <span className={styles.datetime}>{utc2Local(item.plannedStartDate, {localFormat: "YYYY-MM-DD"})}</span>
-              -
-              <span className={styles.datetime}>{utc2Local(item.plannedFinishDate, {localFormat: "YYYY-MM-DD"})}</span>
+              <span>{utc2Local(item.plannedStartDate, {localFormat: "YYYY-MM-DD"})}开始</span>
+              &nbsp;&nbsp;
+              <span>{utc2Local(item.plannedFinishDate, {localFormat: "YYYY-MM-DD"})}完成</span>
             </span>
           }
           description={
