@@ -1,4 +1,4 @@
-import {create, update, queryList, queryProgress, queryRange} from "./service";
+import {create, update, remove, queryList, queryProgress, queryRange} from "./service";
 import {message} from "antd";
 
 const Model = {
@@ -79,6 +79,31 @@ const Model = {
           payload: payload.params
         })
         message.success('更新成功');
+      } else {
+        message.error(msg);
+      }
+    },
+    * remove({payload}, {call, put}) {
+      const {range} = payload.params;
+      const res = yield call(remove, payload.id);
+      const {code, msg} = res;
+      if (code < "300") {
+        if (range && range !== 'all' && range !== 'progress') {
+          yield put({
+            type: 'fetchRange',
+            payload: payload.params
+          });
+        } else {
+          yield put({
+            type: 'fetchList',
+            payload: payload.params
+          });
+        }
+        yield put({
+          type: 'fetchProgress',
+          payload: payload.params
+        })
+        message.success('删除成功');
       } else {
         message.error(msg);
       }

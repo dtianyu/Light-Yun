@@ -53,7 +53,6 @@ const UpdateForm = props => {
         width={modalWidth ? modalWidth : 800}
         onOk={() => {
           form.validateFields().then(fieldsValue => {
-            // form.resetFields();
             // console.log(fieldsValue);
             const values = {
               ...fieldsValue,

@@ -24,29 +24,6 @@ import * as PropTypes from "prop-types";
 import moment from "moment";
 import styles from "@/pages/custom/Tasks/style.less";
 
-// /**
-//  * 删除
-//  * @param id
-//  */
-// const handleRemove = async id => {
-//   if (!id) return true;
-//   message.loading('正在删除');
-//   try {
-//     const res = await remove(id);
-//     const {code, msg} = res;
-//     if (code < "300") {
-//       message.success('删除成功');
-//       return true;
-//     } else {
-//       message.error(msg);
-//       return false;
-//     }
-//   } catch (error) {
-//     message.error('删除失败,请重试');
-//     return false;
-//   }
-// };
-
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 
@@ -158,7 +135,6 @@ const Tasks = props => {
           'actualStartTime': item.actualStartTime ? utc2Local(item.actualStartTime) : null,
           'actualFinishDate': item.actualFinishDate ? utc2Local(item.actualFinishDate) : null,
           'actualFinishTime': item.actualFinishTime ? utc2Local(item.actualFinishTime) : null,
-          'status': item.progress === 100 ? 'V' : 'N',
         });
         break;
       case 'd':
@@ -169,14 +145,10 @@ const Tasks = props => {
           okText: '确认',
           cancelText: '取消',
           onOk: async () => {
-            const success = await handleRemove(item.id);
+            const success = handleRemove(item.id);
 
             if (success) {
               setCurrentObject({});
-
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
             }
           }
         });
@@ -339,6 +311,35 @@ const Tasks = props => {
     }
   };
 
+  /**
+   * 删除
+   * @param id
+   */
+  const handleRemove = id => {
+    if (!id) return true;
+    message.loading('正在删除');
+    try {
+      dispatch({
+        type: 'tasksModel/remove',
+        payload: {
+          id: id,
+          params: {
+            executorId: currentUser.userid,
+            status: 'N',
+            current: page,
+            pageSize: pageSize,
+            range: range,
+            number: number,
+          },
+        }
+      })
+      return true;
+    } catch (error) {
+      message.error('删除失败,请重试');
+      return false;
+    }
+  };
+
   const handleRangeChange = e => {
     switch (e.target.value) {
       case 'all':
@@ -497,8 +498,8 @@ const Tasks = props => {
       {currentObject && Object.keys(currentObject).length ? (
         <UpdateForm
           onFinish={async value => {
-            if (value.realOverDate && value.status !== 'V') {
-              value.status = 'Y';
+            if (value.actualFinishDate && value.progress === 100 && value.status !== 'V') {
+              value.status = 'V';
             } else {
               value.status = 'N';
             }

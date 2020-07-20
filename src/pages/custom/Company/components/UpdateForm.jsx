@@ -95,12 +95,14 @@ const UpdateForm = props => {
         </FormItem>
         <FormItem
           label="启用EAM"
-          name="hasEAM">
+          name="hasEAM"
+          valuePropName="checked">
           <Switch checkedChildren="1" unCheckedChildren="0" disabled={readOnly}/>
         </FormItem>
         <FormItem
           label="启用KPI"
-          name="hasKPI">
+          name="hasKPI"
+          valuePropName="checked">
           <Switch checkedChildren="1" unCheckedChildren="0" disabled={readOnly}/>
         </FormItem>
       </Form>
