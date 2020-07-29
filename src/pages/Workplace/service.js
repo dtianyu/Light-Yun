@@ -17,7 +17,7 @@ export async function queryTask(params) {
   if (params.status) {
     f = `${f};status=${params.status}`;
   }
-  q = `${url}${f}${s}/0/8`;
+  q = `${url}${f}${s}/0/7`;
   // console.log(q);
   const response = await request(q, {
     params: {

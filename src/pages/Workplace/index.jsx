@@ -2,7 +2,6 @@ import {Avatar, Card, Col, List, Skeleton, Row, Statistic} from 'antd';
 import React, {Component} from 'react';
 import {Link, connect} from 'umi';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
-import moment from 'moment';
 import Radar from './components/Radar';
 import EditableLinkGroup from './components/EditableLinkGroup';
 import styles from './style.less';
@@ -14,24 +13,24 @@ const links = [
     href: 'http://oa.hanbell.com.cn:8086/NaNaWeb',
   },
   {
+    title: 'KPI',
+    href: 'http://eap.hanbell.com.cn:8480/Hanbell-KPI',
+  },
+  {
     title: 'EAM',
-    href: 'eam.hanbell.com.cn:8480/Hanbell-EAM',
+    href: 'http://eam.hanbell.com.cn:8480/Hanbell-EAM',
   },
   {
-    title: '操作三',
-    href: '',
+    title: 'WCO',
+    href: 'http://eap.hanbell.com.cn:8480/Hanbell-WCO',
   },
   {
-    title: '操作四',
-    href: '',
+    title: 'EAP',
+    href: 'http://eap.hanbell.com.cn:8480/Hanbell-war',
   },
   {
-    title: '操作五',
-    href: '',
-  },
-  {
-    title: '操作六',
-    href: '',
+    title: 'MIS',
+    href: 'http://eap.hanbell.com.cn:8480/Hanbell-Admin',
   },
 ];
 
@@ -107,7 +106,13 @@ class Workplace extends Component {
         <List.Item.Meta
           title={
             <span>
-              <a className={styles.username}>{item.name}</a>
+              <Link to={{
+                pathname: '/custom/taskEdit',
+                state: {
+                  id: item.id,
+                  readOnly: item.status === 'V',
+                }
+              }} className={styles.username}>{item.name}</Link>
               &nbsp;&nbsp;&nbsp;&nbsp;
               <span>{utc2Local(item.plannedStartDate, {localFormat: "YYYY-MM-DD"})}开始</span>
               &nbsp;&nbsp;
@@ -176,7 +181,7 @@ class Workplace extends Component {
               }}
             >
               <EditableLinkGroup onAdd={() => {
-              }} links={links} linkElement={Link}/>
+              }} links={links} linkElement='a'/>
             </Card>
             <Card
               style={{

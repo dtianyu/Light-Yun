@@ -1,25 +1,39 @@
-import {create, update, remove, queryList, queryProgress, queryRange} from "./service";
+import {
+  create,
+  update,
+  remove,
+  queryList,
+  queryProgress,
+  queryRange,
+  querySingle,
+  querySubList,
+  querySubProgress,
+  querySubRange
+} from "./service";
 import {message} from "antd";
 
 const Model = {
   namespace: 'tasksModel',
   state: {
+    currentObject: {},
     data: [],
     total: 0,
     progress: {},
+    subData: [],
+    subTotal: 0,
+    subProgress: {},
   },
   effects: {
+    * fetchCurrent({payload}, {call, put}) {
+      const response = yield call(querySingle, payload);
+      yield put({
+        type: 'current',
+        payload: response ? response : {},
+      })
+    },
     * fetchList({payload}, {call, put}) {
       // console.log(payload);
       const response = yield call(queryList, payload);
-      yield put({
-        type: 'query',
-        payload: response ? response : {},
-      });
-    },
-    * fetchRange({payload}, {call, put}) {
-      // console.log(payload);
-      const response = yield call(queryRange, payload);
       yield put({
         type: 'query',
         payload: response ? response : {},
@@ -33,6 +47,38 @@ const Model = {
         payload: response ? response : {},
       });
     },
+    * fetchRange({payload}, {call, put}) {
+      // console.log(payload);
+      const response = yield call(queryRange, payload);
+      yield put({
+        type: 'query',
+        payload: response ? response : {},
+      });
+    },
+    * fetchSubList({payload}, {call, put}) {
+      // console.log(payload);
+      const response = yield call(querySubList, payload);
+      yield put({
+        type: 'query',
+        payload: response ? response : {},
+      });
+    },
+    * fetchSubProgress({payload}, {call, put}) {
+      // console.log(payload);
+      const response = yield call(querySubProgress, payload);
+      yield put({
+        type: 'progress',
+        payload: response ? response : {},
+      });
+    },
+    * fetchSubRange({payload}, {call, put}) {
+      // console.log(payload);
+      const response = yield call(querySubRange, payload);
+      yield put({
+        type: 'query',
+        payload: response ? response : {},
+      });
+    },
     * add({payload}, {call, put}) {
       const {range} = payload.params;
       const res = yield call(create, payload.data);
@@ -43,14 +89,26 @@ const Model = {
             type: 'fetchRange',
             payload: payload.params
           });
+          yield put({
+            type: 'fetchSubRange',
+            payload: payload.params
+          });
         } else {
           yield put({
             type: 'fetchList',
             payload: payload.params
           });
+          yield put({
+            type: 'fetchSubList',
+            payload: payload.params
+          });
         }
         yield put({
           type: 'fetchProgress',
+          payload: payload.params
+        })
+        yield put({
+          type: 'fetchSubProgress',
           payload: payload.params
         })
         message.success('新增成功');
@@ -68,14 +126,26 @@ const Model = {
             type: 'fetchRange',
             payload: payload.params
           });
+          yield put({
+            type: 'fetchSubRange',
+            payload: payload.params
+          });
         } else {
           yield put({
             type: 'fetchList',
             payload: payload.params
           });
+          yield put({
+            type: 'fetchSubList',
+            payload: payload.params
+          });
         }
         yield put({
           type: 'fetchProgress',
+          payload: payload.params
+        })
+        yield put({
+          type: 'fetchSubProgress',
           payload: payload.params
         })
         message.success('更新成功');
@@ -93,14 +163,26 @@ const Model = {
             type: 'fetchRange',
             payload: payload.params
           });
+          yield put({
+            type: 'fetchSubRange',
+            payload: payload.params
+          });
         } else {
           yield put({
             type: 'fetchList',
             payload: payload.params
           });
+          yield put({
+            type: 'fetchSubList',
+            payload: payload.params
+          });
         }
         yield put({
           type: 'fetchProgress',
+          payload: payload.params
+        })
+        yield put({
+          type: 'fetchSubProgress',
           payload: payload.params
         })
         message.success('删除成功');
@@ -110,12 +192,26 @@ const Model = {
     },
   },
   reducers: {
+    current(state, {payload}) {
+      return {...state, currentObject: payload,};
+    },
     query(state, {payload}) {
-      return {...state, data: payload.data, total: payload.total,};
+      return {...state, ...payload,};
     },
     progress(state, {payload}) {
-      return {...state, progress: payload.progress,}
-    }
+      console.log(payload);
+      return {...state, ...payload,}
+    },
+    clear() {
+      return {
+        data: [],
+        total: 0,
+        progress: {},
+        subData: [],
+        subTotal: 0,
+        subProgress: {},
+      };
+    },
   },
 };
 

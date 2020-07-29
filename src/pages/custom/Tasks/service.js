@@ -3,27 +3,6 @@ import {eapAppToken} from "@/pages/comm";
 
 const url = '/api/eap/task';
 
-export async function queryProgress(params) {
-  // console.log(params);
-  let q;
-  if (params.executorId) {
-    q = `${url}/executor/${params.executorId}/progress`;
-    const response = await request(q, {
-      params: {
-        ...eapAppToken,
-      },
-    });
-    const {code, object} = response;
-    return {
-      progress: object,
-    };
-  } else {
-    return {
-      progress: {},
-    };
-  }
-}
-
 export async function queryList(params) {
   // console.log(params);
   let q;
@@ -31,7 +10,7 @@ export async function queryList(params) {
   let s = '/s;plannedStartDate=ASC;priority=ASC';
 
   if (params.executorId) {
-    f = `${f};executorId=${params.executorId}`;
+    f = `${f};executorId=${params.userId}`;
   }
   if (params.status) {
     f = `${f};status=${params.status}`;
@@ -54,11 +33,32 @@ export async function queryList(params) {
   };
 }
 
+export async function queryProgress(params) {
+  // console.log(params);
+  let q;
+  if (params.userId) {
+    q = `${url}/executor/${params.userId}/progress`;
+    const response = await request(q, {
+      params: {
+        ...eapAppToken,
+      },
+    });
+    const {code, object} = response;
+    return {
+      progress: object,
+    };
+  } else {
+    return {
+      progress: {},
+    };
+  }
+}
+
 export async function queryRange(params) {
   // console.log(params);
   let q;
-  if (params.executorId) {
-    q = `${url}/executor/${params.executorId}/${params.range}/${params.number}`;
+  if (params.userId) {
+    q = `${url}/executor/${params.userId}/${params.range}/${params.number}`;
     const response = await request(q, {
       params: {
         ...eapAppToken,
@@ -79,6 +79,108 @@ export async function queryRange(params) {
       page: params.current,
       success: false,
       total: 0,
+    };
+  }
+}
+
+export async function querySingle(params) {
+  // console.log(params);
+  let q;
+  if (params.id) {
+    q = `${url}/${params.id}`;
+    const response = await request(q, {
+      params: {
+        ...eapAppToken,
+      },
+    });
+    const {code, object} = response;
+    if (code < '300') {
+      return {
+        ...object,
+      };
+    } else {
+      return {
+        object: {},
+      };
+    }
+  } else {
+    return {
+      object: {},
+    };
+  }
+}
+
+export async function querySubList(params) {
+  let q;
+  if (params.userId) {
+    q = `${url}/manager/${params.userId}`;
+    const response = await request(q, {
+      params: {
+        ...eapAppToken,
+        status: params.status ? params.status : 'N',
+        offset: (params.current - 1) * params.pageSize,
+        pageSize: params.pageSize,
+      },
+    });
+    const {code, data, count} = response;
+    return {
+      subData: data,
+      subTotal: count,
+    };
+  } else {
+    return {
+      subData: [],
+      subTotal: 0,
+    };
+  }
+}
+
+export async function querySubProgress(params) {
+  // console.log(params);
+  let q;
+  if (params.userId) {
+    q = `${url}/manager/${params.userId}/progress`;
+    const response = await request(q, {
+      params: {
+        ...eapAppToken,
+      },
+    });
+    const {code, object} = response;
+    return {
+      subProgress: object,
+    };
+  } else {
+    return {
+      subProgress: {},
+    };
+  }
+}
+
+export async function querySubRange(params) {
+  // console.log(params);
+  let q;
+  if (params.userId) {
+    q = `${url}/manager/${params.userId}/${params.range}/${params.number}`;
+    const response = await request(q, {
+      params: {
+        ...eapAppToken,
+        offset: (params.current - 1) * params.pageSize,
+        pageSize: params.pageSize,
+      },
+    });
+    const {code, data, count} = response;
+    return {
+      subData: data,
+      subPage: params.current,
+      success: code === '200',
+      subTotal: count,
+    };
+  } else {
+    return {
+      subData: [],
+      subPage: params.current,
+      success: false,
+      subTotal: 0,
     };
   }
 }

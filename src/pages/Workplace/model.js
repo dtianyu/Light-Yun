@@ -1,4 +1,4 @@
-import {fakeChartData, queryProjectNotice, queryTask} from './service';
+import {queryProjectNotice, queryTask} from './service';
 import {queryChartData} from "@/pages/Workplace/service";
 
 const Model = {

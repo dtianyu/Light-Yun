@@ -12,11 +12,11 @@ import {
   notification,
   Progress,
   Radio,
-  Row
+  Row, Table
 } from 'antd';
 import React, {useState, useRef, useEffect} from 'react';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
-import {connect} from 'umi';
+import {connect, Link, history} from 'umi';
 import CreateForm from './components/CreateForm';
 import UpdateForm from "./components/UpdateForm";
 import {utc2Local} from "@/pages/comm";
@@ -95,10 +95,15 @@ const Tasks = props => {
   const [pageSize, setPageSize] = useState(10);
   const [range, setRange] = useState('progress');
   const [number, setNumber] = useState(1);
+
+  const [activeTab, setActiveTab] = useState('my');
+
   const actionRef = useRef();
 
-  const {currentUser, data, total, loading, dispatch,} = props;
+  const {currentUser, data, total, subData, subTotal, subProgress, loading, dispatch,} = props;
   const {progress: {thisYearFinished, thisMonthFinished, unfinished}} = props;
+  const {subProgress: {thisYearFinished: subThisYearFinished, thisMonthFinished: subThisMonthFinished, unfinished: subUnfinished}} = props;
+
 
   const operate = (key, item) => {
     const value = {...item};
@@ -217,7 +222,11 @@ const Tasks = props => {
     if (currentUser && dispatch) {
       handleFetch({current: page, pageSize: pageSize, status: 'N'});
       fetchProgress();
-
+      return () => {
+        dispatch({
+          type: 'tasksModel/clear',
+        });
+      };
     }
   }, []);
 
@@ -225,10 +234,16 @@ const Tasks = props => {
     dispatch({
       type: 'tasksModel/fetchProgress',
       payload: {
-        executorId: currentUser.userid,
+        userId: currentUser.userid,
       },
     });
-  }
+    dispatch({
+      type: 'tasksModel/fetchSubProgress',
+      payload: {
+        userId: currentUser.userid,
+      },
+    });
+  };
 
   /**
    * 查询
@@ -240,7 +255,14 @@ const Tasks = props => {
       dispatch({
         type: 'tasksModel/fetchRange',
         payload: {
-          executorId: currentUser.userid,
+          userId: currentUser.userid,
+          ...filters,
+        },
+      });
+      dispatch({
+        type: 'tasksModel/fetchSubRange',
+        payload: {
+          userId: currentUser.userid,
           ...filters,
         },
       });
@@ -248,7 +270,14 @@ const Tasks = props => {
       dispatch({
         type: 'tasksModel/fetchList',
         payload: {
-          executorId: currentUser.userid,
+          userId: currentUser.userid,
+          ...filters,
+        },
+      });
+      dispatch({
+        type: 'tasksModel/fetchSubList',
+        payload: {
+          userId: currentUser.userid,
           ...filters,
         },
       });
@@ -267,7 +296,7 @@ const Tasks = props => {
         payload: {
           data: fields,
           params: {
-            executorId: currentUser.userid,
+            userId: currentUser.userid,
             status: 'N',
             current: page,
             pageSize: pageSize,
@@ -295,7 +324,7 @@ const Tasks = props => {
         payload: {
           data: fields,
           params: {
-            executorId: currentUser.userid,
+            userId: currentUser.userid,
             status: 'N',
             current: page,
             pageSize: pageSize,
@@ -324,7 +353,7 @@ const Tasks = props => {
         payload: {
           id: id,
           params: {
-            executorId: currentUser.userid,
+            userId: currentUser.userid,
             status: 'N',
             current: page,
             pageSize: pageSize,
@@ -388,102 +417,218 @@ const Tasks = props => {
     </div>
   );
 
+  const onTabChange = e => {
+    console.log(e);
+    setActiveTab(e);
+  };
+
+  const tabContent = {
+    my: (
+      <div className={styles.standardList}>
+        <Card bordered={false}>
+          <Row>
+            <Col sm={8} xs={24}>
+              {unfinished ? <Info title="我的待办任务" value={unfinished + "个"} bordered/> : null}
+            </Col>
+            <Col sm={8} xs={24}>
+              {thisMonthFinished ? <Info title="本月完成任务" value={thisMonthFinished + "个"} bordered/> : null}
+            </Col>
+            <Col sm={8} xs={24}>
+              {thisYearFinished ? <Info title="今年完成任务" value={thisYearFinished + "个"}/> : null}
+            </Col>
+          </Row>
+        </Card>
+        <Card
+          className={styles.listCard}
+          bordered={false}
+          title="任务列表"
+          style={{
+            marginTop: 24,
+          }}
+          bodyStyle={{
+            padding: '0 32px 40px 32px',
+          }}
+          extra={extraContent}
+        >
+          <Button
+            type="dashed"
+            style={{
+              width: '100%',
+              marginBottom: 8,
+            }}
+            onClick={() => {
+              setCreateModalVisible(true);
+            }}
+          >
+            <PlusOutlined/>
+            添加
+          </Button>
+          <List
+            size="large"
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              showSizeChanger: true,
+              showQuickJumper: true,
+              pageSize: pageSize,
+              total: total,
+              onChange: (page, pageSize) => {
+                setPage(page);
+                setPageSize(pageSize);
+                if (range === 'all') {
+                  handleFetch({current: page, pageSize: pageSize});
+                } else if (range === 'progress') {
+                  handleFetch({current: page, pageSize: pageSize, status: 'N'});
+                } else {
+                  handleFetch({current: page, pageSize: pageSize, range: range, number: number});
+                }
+              },
+              onShowSizeChange: (current, size) => {
+                setPage(current);
+                setPageSize(size);
+                if (range === 'all') {
+                  handleFetch({current: current, pageSize: size});
+                } else if (range === 'progress') {
+                  handleFetch({current: current, pageSize: size, status: 'N'});
+                } else {
+                  handleFetch({current: current, pageSize: size, range: range, number: number});
+                }
+              },
+            }}
+            dataSource={data}
+            renderItem={item => (
+              <List.Item
+                actions={[
+                  <RowOperation item={item} operate={operate}/>,
+                ]}
+              >
+                <List.Item.Meta
+                  avatar={<Avatar src={item.logo} shape="square" size="large"/>}
+                  title={
+                    <Link to={{
+                      pathname: '/custom/taskEdit',
+                      state: {
+                        id: item.id,
+                        readOnly: modalReadOnly,
+                      }
+                    }}>{item.name}
+                      <span style={{marginLeft: 20}}>执行人:{item.executor}</span>
+                    </Link>}
+                  description={item.description}
+                />
+                <ListContent data={item}/>
+              </List.Item>
+            )}
+          />
+        </Card>
+      </div>
+    ),
+    sub: (
+      <div className={styles.standardList}>
+        <Card bordered={false}>
+          <Row>
+            <Col sm={8} xs={24}>
+              {subUnfinished ? <Info title="下属待办任务" value={subUnfinished + "个"} bordered/> : null}
+            </Col>
+            <Col sm={8} xs={24}>
+              {subThisMonthFinished ?
+                <Info title="下属本月完成" value={subThisMonthFinished + "个"} bordered/> : null}
+            </Col>
+            <Col sm={8} xs={24}>
+              {subThisYearFinished ? <Info title="下属今年完成" value={subThisYearFinished + "个"}/> : null}
+            </Col>
+          </Row>
+        </Card>
+        <Card
+          className={styles.listCard}
+          bordered={false}
+          title="任务列表"
+          style={{
+            marginTop: 24,
+          }}
+          bodyStyle={{
+            padding: '0 32px 40px 32px',
+          }}
+          extra={extraContent}
+        >
+          <List
+            size="large"
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              showSizeChanger: true,
+              showQuickJumper: true,
+              pageSize: pageSize,
+              total: subTotal,
+              onChange: (page, pageSize) => {
+                setPage(page);
+                setPageSize(pageSize);
+                if (range === 'all') {
+                  handleFetch({current: page, pageSize: pageSize});
+                } else if (range === 'progress') {
+                  handleFetch({current: page, pageSize: pageSize, status: 'N'});
+                } else {
+                  handleFetch({current: page, pageSize: pageSize, range: range, number: number});
+                }
+              },
+              onShowSizeChange: (current, size) => {
+                setPage(current);
+                setPageSize(size);
+                if (range === 'all') {
+                  handleFetch({current: current, pageSize: size});
+                } else if (range === 'progress') {
+                  handleFetch({current: current, pageSize: size, status: 'N'});
+                } else {
+                  handleFetch({current: current, pageSize: size, range: range, number: number});
+                }
+              },
+            }}
+            dataSource={subData}
+            renderItem={item => (
+              <List.Item
+                actions={[
+                  <RowOperation item={item} operate={operate}/>,
+                ]}
+              >
+                <List.Item.Meta
+                  avatar={<Avatar src={item.logo} shape="square" size="large"/>}
+                  title={
+                    <Link to={{
+                      pathname: '/custom/taskEdit',
+                      state: {
+                        id: item.id,
+                        readOnly: modalReadOnly,
+                      }
+                    }}>{item.name}
+                      <span style={{marginLeft: 20}}>执行人:{item.executor}</span>
+                    </Link>}
+                  description={item.description}
+                />
+                <ListContent data={item}/>
+              </List.Item>
+            )}
+          />
+        </Card>
+      </div>
+    ),
+  };
+
   return (
     <div>
-      <PageHeaderWrapper>
-        <div className={styles.standardList}>
-          <Card bordered={false}>
-            <Row>
-              <Col sm={8} xs={24}>
-                {unfinished ? <Info title="我的待办任务" value={unfinished + "个"} bordered/> : null}
-              </Col>
-              <Col sm={8} xs={24}>
-                {thisMonthFinished ? <Info title="本月完成任务" value={thisMonthFinished + "个"} bordered/> : null}
-              </Col>
-              <Col sm={8} xs={24}>
-                {thisYearFinished ? <Info title="今年完成任务" value={thisYearFinished + "个"}/> : null}
-              </Col>
-            </Row>
-          </Card>
-          <Card
-            className={styles.listCard}
-            bordered={false}
-            title="任务列表"
-            style={{
-              marginTop: 24,
-            }}
-            bodyStyle={{
-              padding: '0 32px 40px 32px',
-            }}
-            extra={extraContent}
-          >
-            <Button
-              type="dashed"
-              style={{
-                width: '100%',
-                marginBottom: 8,
-              }}
-              onClick={() => {
-                setCreateModalVisible(true);
-              }}
-            >
-              <PlusOutlined/>
-              添加
-            </Button>
-
-            <List
-              size="large"
-              rowKey="id"
-              loading={loading}
-              pagination={{
-                showSizeChanger: true,
-                showQuickJumper: true,
-                pageSize: pageSize,
-                total: total,
-                onChange: (page, pageSize) => {
-                  setPage(page);
-                  setPageSize(pageSize);
-                  if (range === 'all') {
-                    handleFetch({current: page, pageSize: pageSize});
-                  } else if (range === 'progress') {
-                    handleFetch({current: page, pageSize: pageSize, status: 'N'});
-                  } else {
-                    handleFetch({current: page, pageSize: pageSize, range: range, number: number});
-                  }
-                },
-                onShowSizeChange: (current, size) => {
-                  setPage(current);
-                  setPageSize(size);
-                  if (range === 'all') {
-                    handleFetch({current: current, pageSize: size});
-                  } else if (range === 'progress') {
-                    handleFetch({current: current, pageSize: size, status: 'N'});
-                  } else {
-                    handleFetch({current: current, pageSize: size, range: range, number: number});
-                  }
-                },
-              }}
-              dataSource={data}
-              renderItem={item => (
-                <List.Item
-                  actions={[
-                    <RowOperation item={item} operate={operate}/>,
-                  ]}
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar src={item.logo} shape="square" size="large"/>}
-                    title={
-                      <a href={item.href}>{item.name}
-                        <span style={{marginLeft: 20}}>执行人:{item.executor}</span>
-                      </a>}
-                    description={item.description}
-                  />
-                  <ListContent data={item}/>
-                </List.Item>
-              )}
-            />
-          </Card>
-        </div>
+      <PageHeaderWrapper
+        tabActiveKey={activeTab}
+        onTabChange={onTabChange}
+        tabList={[
+          {
+            key: 'my',
+            tab: '我的任务',
+          },
+          {
+            key: 'sub',
+            tab: '下属任务',
+          },
+        ]}>
+        {tabContent[activeTab]}
       </PageHeaderWrapper>
       <CreateForm
         onFinish={async value => {
@@ -529,5 +674,8 @@ export default connect(({user, tasksModel, loading}) => ({
   data: tasksModel.data,
   total: tasksModel.total,
   progress: tasksModel.progress,
+  subData: tasksModel.subData,
+  subTotal: tasksModel.subTotal,
+  subProgress: tasksModel.subProgress,
   loading: loading.effects['tasksModel/fetchList'] || loading.effects['tasksModel/fetchRange'],
 }))(Tasks);

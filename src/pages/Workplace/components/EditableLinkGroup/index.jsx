@@ -19,9 +19,6 @@ const EditableLinkGroup = props => {
           link.title,
         ),
       )}
-      <Button size="small" type="primary" ghost onClick={onAdd}>
-        <PlusOutlined /> 添加
-      </Button>
     </div>
   );
 };

@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, Switch, DatePicker, TimePicker, Button, Radio, Slider} from 'antd';
-import {local2UTC} from "@/pages/comm";
+import {local2UTC, uploadURL} from "@/pages/comm";
 import SystemUser from "@/pages/modal/SystemUser";
 import Department from "@/pages/modal/Department";
+import FileUpload from "@/pages/components/FileUpload";
 
 const FormItem = Form.Item;
 const {TextArea} = Input;
@@ -13,6 +14,8 @@ const UpdateForm = props => {
   const [userModalVisible, setUserModalVisible] = useState(false);
   const [finished, setFinished] = useState(false);
 
+  const [uploadList, setUploadList] = useState([]);
+
   const [form] = Form.useForm();
 
   const progressChanged = value => {
@@ -22,6 +25,22 @@ const UpdateForm = props => {
       setFinished(false);
     }
   }
+
+  const fileUploadOnChange = (info) => {
+    // console.log(info);
+    const {file} = info;
+    let fileList = [...info.fileList];
+    if (file.status === 'done') {
+      fileList = fileList.map(f => {
+        if (f.response && f.response.files) {
+          f.url = f.response.files[0].url;
+          f.uid = f.response.files[0].uid;
+        }
+        return f;
+      });
+    }
+    setUploadList(fileList);
+  };
 
   const {modalVisible, modalWidth, onFinish: handleUpdate, onCancel, values, readOnly} = props;
 
@@ -52,6 +71,7 @@ const UpdateForm = props => {
         visible={modalVisible}
         width={modalWidth ? modalWidth : 800}
         onOk={() => {
+          console.log(uploadList);
           form.validateFields().then(fieldsValue => {
             // console.log(fieldsValue);
             const values = {
@@ -213,6 +233,9 @@ const UpdateForm = props => {
               tooltipVisible
               disabled={readOnly}
             />
+          </FormItem>
+          <FormItem label="上传文件">
+            <FileUpload action={uploadURL} onChange={fileUploadOnChange} fileList={uploadList}/>
           </FormItem>
         </Form>
       </Modal>

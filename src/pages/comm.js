@@ -5,6 +5,8 @@ export const eapAppToken = {
   token: '0ec858293fccfad55575e26b0ce31177',
 };
 
+export const uploadURL = 'https://i2.hanbell.com.cn/FileUploadServer/FileUploadServlet';
+
 export function formatDateTime(value, format) {
   let date, dateFormat;
   if (value.length > 10 && !format) {
