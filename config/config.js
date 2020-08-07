@@ -97,7 +97,7 @@ export default defineConfig({
                 {
                   name: 'taskEdit',
                   icon: 'smile',
-                  path: '/custom/taskEdit',
+                  path: '/custom/tasks/taskEdit',
                   component: './custom/tasks/components/TaskEdit',
                   hideInMenu: true,
                 },

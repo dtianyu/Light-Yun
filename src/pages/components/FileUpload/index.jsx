@@ -5,7 +5,7 @@ import {UploadOutlined} from '@ant-design/icons';
 
 const FileUpload = (props) => {
 
-  const {action, fileList, onChange} = props;
+  const {action, fileList, onChange, disabled} = props;
 
   const p = {
     name: 'file',
@@ -26,6 +26,7 @@ const FileUpload = (props) => {
       document.body.appendChild(link);
       link.click();
     },
+    disabled: {disabled},
   };
   return (
     <div className={styles.container}>

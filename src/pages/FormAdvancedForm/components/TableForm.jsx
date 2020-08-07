@@ -1,9 +1,9 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Popconfirm, Table, message } from 'antd';
-import React, { useState } from 'react';
+import {PlusOutlined} from '@ant-design/icons';
+import {Button, Divider, Input, Popconfirm, Table, message} from 'antd';
+import React, {useState} from 'react';
 import styles from '../style.less';
 
-const TableForm = ({ value, onChange }) => {
+const TableForm = ({value, onChange}) => {
   const [clickedCancel, setClickedCancel] = useState(false);
   const [loading, setLoading] = useState(false);
   const [index, setIndex] = useState(0);
@@ -14,13 +14,13 @@ const TableForm = ({ value, onChange }) => {
 
   const toggleEditable = (e, key) => {
     e.preventDefault();
-    const newData = data?.map(item => ({ ...item }));
+    const newData = data?.map(item => ({...item}));
     const target = getRowByKey(key, newData);
 
     if (target) {
       // 进入编辑状态时保存原始数据
       if (!target.editable) {
-        cacheOriginData[key] = { ...target };
+        cacheOriginData[key] = {...target};
         setCacheOriginData(cacheOriginData);
       }
 
@@ -30,7 +30,7 @@ const TableForm = ({ value, onChange }) => {
   };
 
   const newMember = () => {
-    const newData = data?.map(item => ({ ...item })) || [];
+    const newData = data?.map(item => ({...item})) || [];
     newData.push({
       key: `NEW_TEMP_ID_${index}`,
       workId: '',
@@ -106,7 +106,7 @@ const TableForm = ({ value, onChange }) => {
     cacheData = newData.map(item => {
       if (item.key === key) {
         if (cacheOriginData[key]) {
-          const originItem = { ...item, ...cacheOriginData[key], editable: false };
+          const originItem = {...item, ...cacheOriginData[key], editable: false};
           delete cacheOriginData[key];
           setCacheOriginData(cacheOriginData);
           return originItem;
@@ -194,7 +194,7 @@ const TableForm = ({ value, onChange }) => {
             return (
               <span>
                 <a onClick={e => saveRow(e, record.key)}>添加</a>
-                <Divider type="vertical" />
+                <Divider type="vertical"/>
                 <Popconfirm title="是否要删除此行？" onConfirm={() => remove(record.key)}>
                   <a>删除</a>
                 </Popconfirm>
@@ -205,7 +205,7 @@ const TableForm = ({ value, onChange }) => {
           return (
             <span>
               <a onClick={e => saveRow(e, record.key)}>保存</a>
-              <Divider type="vertical" />
+              <Divider type="vertical"/>
               <a onClick={e => cancel(e, record.key)}>取消</a>
             </span>
           );
@@ -214,7 +214,7 @@ const TableForm = ({ value, onChange }) => {
         return (
           <span>
             <a onClick={e => toggleEditable(e, record.key)}>编辑</a>
-            <Divider type="vertical" />
+            <Divider type="vertical"/>
             <Popconfirm title="是否要删除此行？" onConfirm={() => remove(record.key)}>
               <a>删除</a>
             </Popconfirm>
@@ -241,7 +241,7 @@ const TableForm = ({ value, onChange }) => {
         type="dashed"
         onClick={newMember}
       >
-        <PlusOutlined />
+        <PlusOutlined/>
         新增成员
       </Button>
     </>

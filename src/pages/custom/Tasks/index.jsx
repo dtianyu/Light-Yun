@@ -16,9 +16,8 @@ import {
 } from 'antd';
 import React, {useState, useRef, useEffect} from 'react';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
-import {connect, Link, history} from 'umi';
-import CreateForm from './components/CreateForm';
-import UpdateForm from "./components/UpdateForm";
+import {connect, Link} from 'umi';
+import TaskNew from './components/TaskNew';
 import {utc2Local} from "@/pages/comm";
 import * as PropTypes from "prop-types";
 import moment from "moment";
@@ -88,7 +87,6 @@ const ListContent = ({data: {plannedStartDate, plannedFinishDate, actualStartDat
 const Tasks = props => {
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [modalReadOnly, setModalReadOnly] = useState(false);
   const [currentObject, setCurrentObject] = useState({});
   const [page, setPage] = useState(1);
@@ -100,46 +98,32 @@ const Tasks = props => {
 
   const actionRef = useRef();
 
-  const {currentUser, data, total, subData, subTotal, subProgress, loading, dispatch,} = props;
+  const {currentUser, data, total, subData, subTotal, loading, dispatch,} = props;
   const {progress: {thisYearFinished, thisMonthFinished, unfinished}} = props;
   const {subProgress: {thisYearFinished: subThisYearFinished, thisMonthFinished: subThisMonthFinished, unfinished: subUnfinished}} = props;
-
 
   const operate = (key, item) => {
     const value = {...item};
     const {name} = item;
-    let changed;
     switch (key) {
       case '0':
         // read
-        setUpdateModalVisible(true);
-        setModalReadOnly(true);
-        setCurrentObject({
-          ...item,
-          'plannedStartDate': item.plannedStartDate ? utc2Local(item.plannedStartDate) : null,
-          'plannedStartTime': item.plannedStartTime ? utc2Local(item.plannedStartTime) : null,
-          'plannedFinishDate': item.plannedFinishDate ? utc2Local(item.plannedFinishDate) : null,
-          'plannedFinishTime': item.plannedFinishTime ? utc2Local(item.plannedFinishTime) : null,
-          'actualStartDate': item.actualStartDate ? utc2Local(item.actualStartDate) : null,
-          'actualStartTime': item.actualStartTime ? utc2Local(item.actualStartTime) : null,
-          'actualFinishDate': item.actualFinishDate ? utc2Local(item.actualFinishDate) : null,
-          'actualFinishTime': item.actualFinishTime ? utc2Local(item.actualFinishTime) : null,
+        props.history.push({
+          pathname: '/custom/tasks/taskEdit',
+          state: {
+            id: item.id,
+            readOnly: true,
+          }
         });
         break;
       case 'e':
         // edit
-        setUpdateModalVisible(true);
-        setModalReadOnly(false);
-        setCurrentObject({
-          ...item,
-          'plannedStartDate': item.plannedStartDate ? utc2Local(item.plannedStartDate) : null,
-          'plannedStartTime': item.plannedStartTime ? utc2Local(item.plannedStartTime) : null,
-          'plannedFinishDate': item.plannedFinishDate ? utc2Local(item.plannedFinishDate) : null,
-          'plannedFinishTime': item.plannedFinishTime ? utc2Local(item.plannedFinishTime) : null,
-          'actualStartDate': item.actualStartDate ? utc2Local(item.actualStartDate) : null,
-          'actualStartTime': item.actualStartTime ? utc2Local(item.actualStartTime) : null,
-          'actualFinishDate': item.actualFinishDate ? utc2Local(item.actualFinishDate) : null,
-          'actualFinishTime': item.actualFinishTime ? utc2Local(item.actualFinishTime) : null,
+        props.history.push({
+          pathname: '/custom/tasks/taskEdit',
+          state: {
+            id: item.id,
+            readOnly: modalReadOnly,
+          }
         });
         break;
       case 'd':
@@ -418,7 +402,6 @@ const Tasks = props => {
   );
 
   const onTabChange = e => {
-    console.log(e);
     setActiveTab(e);
   };
 
@@ -506,7 +489,7 @@ const Tasks = props => {
                   avatar={<Avatar src={item.logo} shape="square" size="large"/>}
                   title={
                     <Link to={{
-                      pathname: '/custom/taskEdit',
+                      pathname: '/custom/tasks/taskEdit',
                       state: {
                         id: item.id,
                         readOnly: modalReadOnly,
@@ -630,7 +613,7 @@ const Tasks = props => {
         ]}>
         {tabContent[activeTab]}
       </PageHeaderWrapper>
-      <CreateForm
+      <TaskNew
         onFinish={async value => {
           const success = handleAdd(value);
           if (success) {
@@ -640,30 +623,6 @@ const Tasks = props => {
         onCancel={() => setCreateModalVisible(false)}
         modalVisible={createModalVisible}
       />
-      {currentObject && Object.keys(currentObject).length ? (
-        <UpdateForm
-          onFinish={async value => {
-            if (value.actualFinishDate && value.progress === 100 && value.status !== 'V') {
-              value.status = 'V';
-            } else {
-              value.status = 'N';
-            }
-            const success = handleUpdate({...currentObject, ...value});
-
-            if (success) {
-              setUpdateModalVisible(false);
-              setCurrentObject({});
-            }
-          }}
-          onCancel={() => {
-            setUpdateModalVisible(false);
-            setCurrentObject({});
-          }}
-          modalVisible={updateModalVisible}
-          values={currentObject}
-          readOnly={modalReadOnly}
-        />
-      ) : null}
     </div>
   );
 

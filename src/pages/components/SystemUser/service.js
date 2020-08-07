@@ -1,10 +1,10 @@
 import request from '@/utils/request';
 import {eapAppToken} from "@/pages/comm";
 
-const url = '/api/eap/systemuser/pagination';
+const url = '/api/eap/systemuser';
 
 export async function queryList(params) {
-  console.log(params);
+  // console.log(params);
   let q;
   let f = '/f';
   let s = '/s';
@@ -17,7 +17,7 @@ export async function queryList(params) {
   if (params.deptno) {
     f = `${f};deptno=${params.deptno}`;
   }
-  q = `${url}${f}${s}`
+  q = `${url}/pagination${f}${s}`
   const response = await request(q, {
     params: {
       offset: (params.current - 1) * params.pageSize,
@@ -32,4 +32,14 @@ export async function queryList(params) {
     success: code === '200',
     total: count,
   };
+}
+
+export async function query(params) {
+  let q = `${url}/query`;
+  return await request(q, {
+    params: {
+      ...eapAppToken,
+      q: params.q,
+    },
+  });
 }

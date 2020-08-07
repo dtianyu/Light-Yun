@@ -117,37 +117,39 @@ const Model = {
       }
     },
     * update({payload}, {call, put}) {
-      const {range} = payload.params;
       const res = yield call(update, payload.data);
       const {code, msg} = res;
       if (code < "300") {
-        if (range && range !== 'all' && range !== 'progress') {
+        if (payload.params) {
+          const {range} = payload.params;
+          if (range && range !== 'all' && range !== 'progress') {
+            yield put({
+              type: 'fetchRange',
+              payload: payload.params
+            });
+            yield put({
+              type: 'fetchSubRange',
+              payload: payload.params
+            });
+          } else {
+            yield put({
+              type: 'fetchList',
+              payload: payload.params
+            });
+            yield put({
+              type: 'fetchSubList',
+              payload: payload.params
+            });
+          }
           yield put({
-            type: 'fetchRange',
+            type: 'fetchProgress',
             payload: payload.params
-          });
+          })
           yield put({
-            type: 'fetchSubRange',
+            type: 'fetchSubProgress',
             payload: payload.params
-          });
-        } else {
-          yield put({
-            type: 'fetchList',
-            payload: payload.params
-          });
-          yield put({
-            type: 'fetchSubList',
-            payload: payload.params
-          });
+          })
         }
-        yield put({
-          type: 'fetchProgress',
-          payload: payload.params
-        })
-        yield put({
-          type: 'fetchSubProgress',
-          payload: payload.params
-        })
         message.success('更新成功');
       } else {
         message.error(msg);
@@ -199,7 +201,6 @@ const Model = {
       return {...state, ...payload,};
     },
     progress(state, {payload}) {
-      console.log(payload);
       return {...state, ...payload,}
     },
     clear() {

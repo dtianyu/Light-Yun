@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, DatePicker, Button, Radio} from 'antd';
 import {local2UTC} from "@/pages/comm";
-import SystemUser from "@/pages/modal/SystemUser";
+import SystemUser from "@/pages/components/SystemUser";
 import * as moment from "moment";
-import Department from "@/pages/modal/Department";
+import Department from "@/pages/components/Department";
 import SystemNameSelect from "@/pages/components/SystemNameSelect";
 
 

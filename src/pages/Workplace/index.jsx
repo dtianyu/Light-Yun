@@ -107,7 +107,7 @@ class Workplace extends Component {
           title={
             <span>
               <Link to={{
-                pathname: '/custom/taskEdit',
+                pathname: '/custom/tasks/taskEdit',
                 state: {
                   id: item.id,
                   readOnly: item.status === 'V',

@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, DatePicker, Button, Radio, TimePicker} from 'antd';
 import {local2UTC} from "@/pages/comm";
-import SystemUser from "@/pages/modal/SystemUser";
-import Department from "@/pages/modal/Department";
+import SystemUser from "@/pages/components/SystemUser";
+import Department from "@/pages/components/Department";
 import * as moment from "moment";
 
 const FormItem = Form.Item;
 const {TextArea} = Input;
 
-const CreateForm = props => {
+const TaskNew = props => {
 
   const [deptModalVisible, setDeptModalVisible] = useState(false);
   const [userModalVisible, setUserModalVisible] = useState(false);
@@ -208,4 +208,4 @@ const CreateForm = props => {
   );
 };
 
-export default CreateForm;
+export default TaskNew;

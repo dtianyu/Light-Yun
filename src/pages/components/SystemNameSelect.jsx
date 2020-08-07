@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Select} from "antd";
-import {queryList as querySystemName} from "@/pages/modal/SystemName/service";
+import {queryList as querySystemName} from "@/pages/components/SystemName/service";
 
 const {Option} = Select;
 

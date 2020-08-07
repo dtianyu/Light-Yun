@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, Switch, DatePicker, Button, Radio} from 'antd';
 import {local2UTC} from "@/pages/comm";
-import SystemUser from "@/pages/modal/SystemUser";
-import Department from "@/pages/modal/Department";
+import SystemUser from "@/pages/components/SystemUser";
+import Department from "@/pages/components/Department";
 import SystemNameSelect from "@/pages/components/SystemNameSelect";
 
 const FormItem = Form.Item;

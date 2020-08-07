@@ -1,18 +1,18 @@
 import React from 'react';
 import {Modal, Button, Input, message} from 'antd';
 import ProTable from '@ant-design/pro-table';
-import {queryList} from '@/pages/modal/SystemName/service'
+import {queryList} from '@/pages/components/Department/service'
 
-class SystemName extends React.Component {
+class Department extends React.Component {
 
   columns = [
     {
-      title: '系统',
-      dataIndex: 'name',
+      title: '部门ID',
+      dataIndex: 'deptno',
     },
     {
-      title: '名称',
-      dataIndex: 'descript',
+      title: '部门',
+      dataIndex: 'dept',
     },
   ];
 
@@ -28,8 +28,8 @@ class SystemName extends React.Component {
     const {title, width, visible, selectType, onCancel, onHandle} = this.props;
     return (
       <Modal
-        title={title ? title : "系统列表"}
-        width={width ? width : 600}
+        title={title ? title : "部门列表"}
+        width={width ? width : 680}
         visible={visible}
         onCancel={onCancel}
         onOk={() => {
@@ -68,11 +68,10 @@ class SystemName extends React.Component {
             },
           }}
           size="small"
-          search={false}
         />
       </Modal>
     );
   }
 }
 
-export default SystemName;
+export default Department;

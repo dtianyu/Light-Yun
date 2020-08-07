@@ -9,7 +9,7 @@ export async function queryList(params) {
   let f = '/f';
   let s = '/s;plannedStartDate=ASC;priority=ASC';
 
-  if (params.executorId) {
+  if (params.userId) {
     f = `${f};executorId=${params.userId}`;
   }
   if (params.status) {
