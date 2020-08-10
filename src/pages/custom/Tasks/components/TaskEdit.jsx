@@ -141,7 +141,7 @@ const TaskEdit = props => {
                 let f = {pid: currentObject.id, seq: index + 1, uid: a.uid, name: a.name, url: a.url};
                 attachments.push(f);
               });
-              console.log(attachments);
+              // console.log(attachments);
               const values = {
                 ...currentObject,
                 ...fieldsValue,
@@ -351,7 +351,8 @@ const TaskEdit = props => {
                 bordered={false}
                 title="相关资料"
               >
-                <FileUpload action={uploadURL} onChange={fileUploadOnChange} fileList={attachmentList} disabled={readOnly}/>
+                <FileUpload action={uploadURL} onChange={fileUploadOnChange} fileList={attachmentList}
+                            disabled={readOnly}/>
               </Card>
             </Col>
           </Row>
