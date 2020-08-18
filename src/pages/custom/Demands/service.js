@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import {eapAppToken, formatDateTime} from "@/pages/comm";
 
-const url = '/api/eap/demands';
+const url = '/jrs/api/eap/demands';
 
 export async function queryList(params) {
   console.log(params);

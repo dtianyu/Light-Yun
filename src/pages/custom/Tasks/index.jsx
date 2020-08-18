@@ -5,6 +5,7 @@ import {
   Card,
   Col,
   Dropdown,
+  Input,
   List,
   Menu,
   message,
@@ -12,7 +13,7 @@ import {
   notification,
   Progress,
   Radio,
-  Row, Table
+  Row
 } from 'antd';
 import React, {useState, useRef, useEffect} from 'react';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
@@ -25,6 +26,7 @@ import styles from "@/pages/custom/Tasks/style.less";
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
+const {Search} = Input;
 
 const RowOperation = ({item, operate}) => (
   <Dropdown
@@ -88,7 +90,7 @@ const Tasks = props => {
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [modalReadOnly, setModalReadOnly] = useState(false);
-  const [currentObject, setCurrentObject] = useState({});
+  const [init, setInit] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [range, setRange] = useState('progress');
@@ -137,7 +139,7 @@ const Tasks = props => {
             const success = handleRemove(item.id);
 
             if (success) {
-              setCurrentObject({});
+
             }
           }
         });
@@ -158,7 +160,6 @@ const Tasks = props => {
               const success = await handleUpdate({...value});
 
               if (success) {
-                setCurrentObject({});
 
                 if (actionRef.current) {
                   actionRef.current.reload();
@@ -187,7 +188,6 @@ const Tasks = props => {
             const success = await handleUpdate({...value});
 
             if (success) {
-              setCurrentObject({});
 
               if (actionRef.current) {
                 actionRef.current.reload();
@@ -206,6 +206,7 @@ const Tasks = props => {
     if (currentUser && dispatch) {
       handleFetch({current: page, pageSize: pageSize, status: 'N'});
       fetchProgress();
+      setInit(1);
       return () => {
         dispatch({
           type: 'tasksModel/clear',
@@ -236,35 +237,43 @@ const Tasks = props => {
     const {range} = filters;
     // console.log(range);
     if (range && range !== 'all' && range !== 'progress') {
-      dispatch({
-        type: 'tasksModel/fetchRange',
-        payload: {
-          userId: currentUser.userid,
-          ...filters,
-        },
-      });
-      dispatch({
-        type: 'tasksModel/fetchSubRange',
-        payload: {
-          userId: currentUser.userid,
-          ...filters,
-        },
-      });
+      if (activeTab === 'my' || init === 0) {
+        dispatch({
+          type: 'tasksModel/fetchRange',
+          payload: {
+            userId: currentUser.userid,
+            ...filters,
+          },
+        });
+      }
+      if (activeTab === 'sub' || init === 0) {
+        dispatch({
+          type: 'tasksModel/fetchSubRange',
+          payload: {
+            userId: currentUser.userid,
+            ...filters,
+          },
+        });
+      }
     } else {
-      dispatch({
-        type: 'tasksModel/fetchList',
-        payload: {
-          userId: currentUser.userid,
-          ...filters,
-        },
-      });
-      dispatch({
-        type: 'tasksModel/fetchSubList',
-        payload: {
-          userId: currentUser.userid,
-          ...filters,
-        },
-      });
+      if (activeTab === 'my' || init === 0) {
+        dispatch({
+          type: 'tasksModel/fetchList',
+          payload: {
+            userId: currentUser.userid,
+            ...filters,
+          },
+        });
+      }
+      if (activeTab === 'sub' || init === 0) {
+        dispatch({
+          type: 'tasksModel/fetchSubList',
+          payload: {
+            userId: currentUser.userid,
+            ...filters,
+          },
+        });
+      }
     }
   }
 
@@ -388,6 +397,34 @@ const Tasks = props => {
     }
   };
 
+  const handleSearch = (value) => {
+    if (currentUser && dispatch) {
+      dispatch({
+        type: 'tasksModel/fetchSearch',
+        payload: {
+          userId: currentUser.userid,
+          current: page,
+          pageSize: pageSize,
+          q: value,
+        },
+      });
+    }
+  };
+
+  const handleSubSearch = (value) => {
+    if (currentUser && dispatch) {
+      dispatch({
+        type: 'tasksModel/fetchSubSearch',
+        payload: {
+          userId: currentUser.userid,
+          current: page,
+          pageSize: pageSize,
+          q: value,
+        },
+      });
+    }
+  };
+
   const extraContent = (
     <div className={styles.extraContent}>
       <RadioGroup onChange={handleRangeChange} defaultValue="progress">
@@ -398,6 +435,16 @@ const Tasks = props => {
         <RadioButton value="pastTwoWeeks">上两周</RadioButton>
         <RadioButton value="all">所有的</RadioButton>
       </RadioGroup>
+      <Search
+        className={styles.extraContentSearch}
+        placeholder="请输入"
+        onSearch={(value, event) => {
+          if (activeTab === 'my') {
+            handleSearch(value);
+          } else {
+            handleSubSearch(value);
+          }
+        }}/>
     </div>
   );
 
@@ -424,7 +471,6 @@ const Tasks = props => {
         <Card
           className={styles.listCard}
           bordered={false}
-          title="任务列表"
           style={{
             marginTop: 24,
           }}

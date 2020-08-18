@@ -7,11 +7,18 @@
  */
 export default {
   dev: {
-    '/api/': {
+    '/jrs/': {
       target: 'https://i2.hanbell.com.cn/Hanbell-JRS/',
       changeOrigin: true,
       pathRewrite: {
-        '^': '',
+        'jrs': '',
+      },
+    },
+    '/wco/': {
+      target: 'https://i2.hanbell.com.cn/Hanbell-WCO/',
+      changeOrigin: true,
+      pathRewrite: {
+        'wco': '',
       },
     },
   },

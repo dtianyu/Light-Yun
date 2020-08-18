@@ -20,7 +20,7 @@ export default {
   'menu.form.step-form.info': '分步表单（填写转账信息）',
   'menu.form.step-form.confirm': '分步表单（确认转账信息）',
   'menu.form.step-form.result': '分步表单（完成）',
-  'menu.form.advanced-form': '高级表单',
+  'menu.formadvancedform': '高级表单',
   'menu.list': '列表页',
   'menu.list.table-list': '查询表格',
   'menu.list.basic-list': '标准列表',
@@ -31,7 +31,7 @@ export default {
   'menu.list.search-list.applications': '搜索列表（应用）',
   'menu.profile': '详情页',
   'menu.profile.basic': '基础详情页',
-  'menu.profile.advanced': '高级详情页',
+  'menu.profileadvanced': '高级详情页',
   'menu.result': '结果页',
   'menu.result.success': '成功页',
   'menu.result.fail': '失败页',
@@ -54,5 +54,6 @@ export default {
   'menu.custom.company': '公司列表',
   'menu.custom.demands': '优化需求',
   'menu.custom.tasks': '任务清单',
-  'menu.custom.tasks.taskEdit': '编辑任务',
+  'menu.custom.taskEdit': '编辑任务',
+
 };

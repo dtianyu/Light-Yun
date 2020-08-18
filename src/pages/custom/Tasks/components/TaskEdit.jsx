@@ -64,8 +64,9 @@ const TaskEdit = props => {
   useEffect(() => {
     if (currentObject && Object.keys(currentObject).length !== 0) {
       if (currentObject.status === 'V') {
-        setReadOnly(true);
+        setReadOnly(readOnly || true);
       }
+      // console.log(readOnly);
       form.setFieldsValue({
         ...currentObject,
         'plannedStartDate': currentObject.plannedStartDate ? utc2Local(currentObject.plannedStartDate) : null,

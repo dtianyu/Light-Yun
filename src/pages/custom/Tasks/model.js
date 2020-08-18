@@ -4,11 +4,13 @@ import {
   remove,
   queryList,
   queryProgress,
+  querySearch,
   queryRange,
   querySingle,
   querySubList,
   querySubProgress,
-  querySubRange
+  querySubRange,
+  querySubSearch,
 } from "./service";
 import {message} from "antd";
 
@@ -55,6 +57,14 @@ const Model = {
         payload: response ? response : {},
       });
     },
+    * fetchSearch({payload}, {call, put}) {
+      // console.log(payload);
+      const response = yield call(querySearch, payload);
+      yield put({
+        type: 'query',
+        payload: response ? response : {},
+      });
+    },
     * fetchSubList({payload}, {call, put}) {
       // console.log(payload);
       const response = yield call(querySubList, payload);
@@ -74,6 +84,14 @@ const Model = {
     * fetchSubRange({payload}, {call, put}) {
       // console.log(payload);
       const response = yield call(querySubRange, payload);
+      yield put({
+        type: 'query',
+        payload: response ? response : {},
+      });
+    },
+    * fetchSubSearch({payload}, {call, put}) {
+      // console.log(payload);
+      const response = yield call(querySubSearch, payload);
       yield put({
         type: 'query',
         payload: response ? response : {},

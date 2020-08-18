@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import {eapAppToken} from "@/pages/comm";
 
-const q = '/api/eap/systemuser/login/yun';
+const q = '/jrs/api/eap/systemuser/login/yun';
 
 export async function loginYun(params) {
   return request(q, {

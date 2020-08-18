@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import {eapAppToken} from "@/pages/comm";
 
-const url = '/api/eap/task';
+const url = '/jrs/api/eap/task';
 
 export async function queryList(params) {
   // console.log(params);
@@ -77,6 +77,34 @@ export async function queryRange(params) {
     return {
       data: [],
       page: params.current,
+      success: false,
+      total: 0,
+    };
+  }
+}
+
+export async function querySearch(params) {
+  // console.log(params);
+  let q;
+  if (params.userId) {
+    q = `${url}/executor/${params.userId}/pagination/query`;
+    const response = await request(q, {
+      params: {
+        q: params.q,
+        offset: (params.current - 1) * params.pageSize,
+        pageSize: params.pageSize,
+        ...eapAppToken,
+      },
+    });
+    const {code, data, count} = response;
+    return {
+      data,
+      success: code === '200',
+      total: count,
+    };
+  } else {
+    return {
+      data: [],
       success: false,
       total: 0,
     };
@@ -179,6 +207,34 @@ export async function querySubRange(params) {
     return {
       subData: [],
       subPage: params.current,
+      success: false,
+      subTotal: 0,
+    };
+  }
+}
+
+export async function querySubSearch(params) {
+  // console.log(params);
+  let q;
+  if (params.userId) {
+    q = `${url}/manager/${params.userId}/pagination/query`;
+    const response = await request(q, {
+      params: {
+        q: params.q,
+        offset: (params.current - 1) * params.pageSize,
+        pageSize: params.pageSize,
+        ...eapAppToken,
+      },
+    });
+    const {code, data, count} = response;
+    return {
+      subData: data,
+      success: code === '200',
+      subTotal: count,
+    };
+  } else {
+    return {
+      subData: [],
       success: false,
       subTotal: 0,
     };

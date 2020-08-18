@@ -26,7 +26,7 @@ const FileUpload = (props) => {
       document.body.appendChild(link);
       link.click();
     },
-    disabled: {disabled},
+    disabled: disabled,
   };
   return (
     <div className={styles.container}>

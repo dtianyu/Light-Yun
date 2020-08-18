@@ -104,13 +104,13 @@ export default defineConfig({
               ],
             },
             {
-              name: '高级详情页',
+              name: 'profileadvanced',
               icon: 'smile',
               path: '/profileadvanced',
               component: './ProfileAdvanced',
             },
             {
-              name: '高级表单',
+              name: 'formadvancedform',
               icon: 'smile',
               path: '/formadvancedform',
               component: './FormAdvancedForm',

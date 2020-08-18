@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import {eapAppToken} from "@/pages/comm";
 
-const url = '/api/eap/company';
+const url = '/jrs/api/eap/company';
 
 export async function queryList(params) {
   let q;

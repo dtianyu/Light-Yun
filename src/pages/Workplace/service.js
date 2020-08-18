@@ -7,7 +7,7 @@ export async function queryProjectNotice() {
 
 export async function queryTask(params) {
   // console.log(params);
-  let url = '/api/eap/task';
+  let url = '/jrs/api/eap/task';
   let q;
   let f = '/f';
   let s = '/s;plannedStartDate=ASC;priority=ASC';
@@ -35,7 +35,7 @@ export async function queryTask(params) {
 
 export async function queryChartData(params) {
   // console.log(params);
-  let url = '/api/eap/systemuser/chart';
+  let url = '/jrs/api/eap/systemuser/chart';
   if (params.userid) {
     const response = await request(url, {
       params: {
