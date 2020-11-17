@@ -192,7 +192,6 @@ const Demands = () => {
         // cancel
         changed = {
           status: 'W',
-          optdate: moment.utc().format(),
         };
 
         Modal.confirm({

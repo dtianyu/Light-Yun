@@ -1,9 +1,9 @@
 // https://umijs.org/config/
-import {defineConfig} from 'umi';
+import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 
-const {REACT_APP_ENV} = process.env;
+const { REACT_APP_ENV } = process.env;
 export default defineConfig({
   hash: true,
   antd: {},
@@ -120,6 +120,39 @@ export default defineConfig({
               name: 'welcome',
               icon: 'smile',
               component: './Welcome',
+            },
+            {
+              name: 'production-marketing',
+              path: '/production-marketing',
+              icon: 'home',
+              routes: [
+                {
+                  name: 'sales-order',
+                  icon: 'smile',
+                  path: '/production-marketing/sales-order',
+                  component: './ProductionMarketing/SalesOrder',
+                },
+                {
+                  name: 'order-detail',
+                  icon: 'smile',
+                  path: '/production-marketing/order-detail',
+                  component: './ProductionMarketing/SalesOrder/components/OrderDetail',
+                  hideInMenu: true,
+                },
+                {
+                  name: 'production-plan',
+                  icon: 'smile',
+                  path: '/production-marketing/production-plan',
+                  component: './ProductionMarketing/ProductionPlan',
+                },
+                {
+                  name: 'plan-detail',
+                  icon: 'smile',
+                  path: '/production-marketing/plan-detail',
+                  component: './ProductionMarketing/ProductionPlan/components/PlanDetail',
+                  hideInMenu: true,
+                },
+              ],
             },
             {
               component: './404',

@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, Switch, DatePicker, Button, Radio} from 'antd';
 import {local2UTC} from "@/pages/comm";
-import SystemUser from "@/pages/components/SystemUser";
-import Department from "@/pages/components/Department";
-import SystemNameSelect from "@/pages/components/SystemNameSelect";
+import SystemUser from "@/pages/components/EAP/SystemUser";
+import Department from "@/pages/components/EAP/Department";
+import SystemNameSelect from "@/pages/components/EAP/SystemNameSelect";
 
 const FormItem = Form.Item;
 const {TextArea} = Input;
@@ -60,7 +60,7 @@ const UpdateForm = props => {
               'planOverDate': fieldsValue.planOverDate ? local2UTC(fieldsValue.planOverDate) : null,
               'realStartDate': fieldsValue.realStartDate ? local2UTC(fieldsValue.realStartDate) : null,
               'realOverDate': fieldsValue.realOverDate ? local2UTC(fieldsValue.realOverDate) : null,
-            }
+            };
             handleUpdate(values);
           })
         }}
@@ -85,8 +85,8 @@ const UpdateForm = props => {
             rules={[
               {
                 required: true,
-                message: '请输入需求简述，最多20个字',
-                min: 4
+                message: '请输入需求简述，最多40个字',
+                max: 40
               },
             ]}>
             <Input placeholder="需求简述" disabled={readOnly}/>

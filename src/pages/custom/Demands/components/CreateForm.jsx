@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {Modal, Form, Input, DatePicker, Button, Radio} from 'antd';
 import {local2UTC} from "@/pages/comm";
-import SystemUser from "@/pages/components/SystemUser";
+import SystemUser from "@/pages/components/EAP/SystemUser";
 import * as moment from "moment";
-import Department from "@/pages/components/Department";
-import SystemNameSelect from "@/pages/components/SystemNameSelect";
+import Department from "@/pages/components/EAP/Department";
+import SystemNameSelect from "@/pages/components/EAP/SystemNameSelect";
 
 
 const FormItem = Form.Item;
@@ -55,7 +55,7 @@ const CreateForm = props => {
               'formdate': moment.utc().format(),
               'demandDate': fieldsValue.demandDate ? local2UTC(fieldsValue.demandDate) : null,
               'status': 'N',
-            }
+            };
             handleAdd(values);
           });
         }}
@@ -68,8 +68,8 @@ const CreateForm = props => {
             rules={[
               {
                 required: true,
-                message: '请输入需求简述，最多20个字',
-                max: 20
+                message: '请输入需求简述，最多40个字',
+                max: 40
               },
             ]}>
             <Input placeholder="需求简述"/>
@@ -175,11 +175,15 @@ const CreateForm = props => {
         onHandle={async data => {
           if (data.length === 1) {
             form.setFieldsValue({
-              demanderID: data[0].userid,
-              demanderName: data[0].username,
-              demanderDeptID: data[0].deptno,
-              demanderDeptName: data[0].dept.dept,
+              salesman: data[0].userid,
+              salesmanName: data[0].username,
             });
+            if (data[0].deptno) {
+              form.setFieldsValue({
+                deptno: data[0].deptno,
+                dept: data[0].dept.dept,
+              });
+            }
           }
           setUserModalVisible(false);
         }}>

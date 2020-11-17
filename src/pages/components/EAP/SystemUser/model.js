@@ -1,4 +1,4 @@
-import {query, queryList} from "@/pages/components/SystemUser/service";
+import {query, queryList} from "@/pages/components/EAP/SystemUser/service";
 
 
 const Model = {

@@ -8,14 +8,15 @@ import * as moment from "moment";
 const FormItem = Form.Item;
 const {TextArea} = Input;
 
-const TaskNew = props => {
+const TaskSplit = props => {
 
   const [deptModalVisible, setDeptModalVisible] = useState(false);
   const [userModalVisible, setUserModalVisible] = useState(false);
 
   const [form] = Form.useForm();
 
-  const {modalVisible, modalWidth, onFinish: handleAdd, onCancel} = props;
+  const {data, modalVisible, modalWidth, onFinish: handleAdd, onCancel} = props;
+  // console.log(data);
 
   const formItemLayout = {
     labelCol: {
@@ -54,7 +55,9 @@ const TaskNew = props => {
               'plannedFinishDate': fieldsValue.plannedFinishDate ? local2UTC(fieldsValue.plannedFinishDate) : null,
               'plannedFinishTime': fieldsValue.plannedFinishTime ? local2UTC(fieldsValue.plannedFinishTime) : null,
               'status': 'N',
+              'pid': data.id,
             }
+            console.log(values);
             handleAdd(values);
           });
         }}
@@ -208,4 +211,4 @@ const TaskNew = props => {
   );
 };
 
-export default TaskNew;
+export default TaskSplit;

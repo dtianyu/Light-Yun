@@ -1,18 +1,27 @@
 import React from 'react';
-import {Modal, Button, Input, message} from 'antd';
+import { Modal, Button, Input, message } from 'antd';
 import ProTable from '@ant-design/pro-table';
-import {queryList} from '@/pages/components/Department/service'
+import { queryList } from '@/pages/components/ERP/ItemModel/service';
 
-class Department extends React.Component {
-
+class ItemModel extends React.Component {
   columns = [
     {
-      title: '部门ID',
-      dataIndex: 'deptno',
+      title: '机型',
+      dataIndex: 'cmcmodel',
     },
     {
-      title: '部门',
-      dataIndex: 'dept',
+      title: '名称',
+      dataIndex: 'cmcitdsc',
+      hideInSearch: true,
+    },
+    {
+      title: '品号',
+      dataIndex: ['cdrdmmodelPK', 'itnbr'],
+      hideInSearch: true,
+    },
+    {
+      title: '分类',
+      dataIndex: 'kind',
     },
   ];
 
@@ -25,11 +34,13 @@ class Department extends React.Component {
   }
 
   render() {
-    const {title, width, visible, selectType, onCancel, onHandle} = this.props;
+    const { title, width, visible, selectType, company, filter, onCancel, onHandle } = this.props;
+
     return (
       <Modal
-        title={title ? title : "部门列表"}
-        width={width ? width : 680}
+        destroyOnClose
+        title={title ? title : '产品列表'}
+        width={width ? width : 860}
         visible={visible}
         onCancel={onCancel}
         onOk={() => {
@@ -42,9 +53,9 @@ class Department extends React.Component {
       >
         <ProTable
           columns={this.columns}
-          onRow={record => {
+          onRow={(record) => {
             return {
-              onDoubleClick: event => {
+              onDoubleClick: (event) => {
                 if (record) {
                   let arr = [];
                   arr.push(record);
@@ -59,12 +70,18 @@ class Department extends React.Component {
             pageSize: 10,
             showSizeChanger: true,
           }}
-          request={params => queryList(params)}
-          rowKey="id"
+          request={(params) =>
+            queryList({
+              facno: company ? company : 'C',
+              kind: filter.kind ? filter.kind : '',
+              ...params,
+            })
+          }
+          rowKey="cmcmodel"
           rowSelection={{
             type: selectType,
             onChange: (selectedRowKeys, selectedRows) => {
-              this.setState({selectedData: selectedRows})
+              this.setState({ selectedData: selectedRows });
             },
           }}
           size="small"
@@ -74,4 +91,4 @@ class Department extends React.Component {
   }
 }
 
-export default Department;
+export default ItemModel;

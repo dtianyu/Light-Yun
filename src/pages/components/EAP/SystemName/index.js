@@ -1,7 +1,7 @@
 import React from 'react';
 import {Modal, Button, Input, message} from 'antd';
 import ProTable from '@ant-design/pro-table';
-import {queryList} from '@/pages/components/SystemName/service'
+import {queryList} from '@/pages/components/EAP/SystemName/service'
 
 class SystemName extends React.Component {
 

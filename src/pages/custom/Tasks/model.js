@@ -24,6 +24,7 @@ const Model = {
     subData: [],
     subTotal: 0,
     subProgress: {},
+    extData: {},
   },
   effects: {
     * fetchCurrent({payload}, {call, put}) {
@@ -98,37 +99,39 @@ const Model = {
       });
     },
     * add({payload}, {call, put}) {
-      const {range} = payload.params;
       const res = yield call(create, payload.data);
       const {code, msg} = res;
       if (code < "300") {
-        if (range && range !== 'all' && range !== 'progress') {
+        if (payload.params) {
+          const {range} = payload.params;
+          if (range && range !== 'all' && range !== 'progress') {
+            yield put({
+              type: 'fetchRange',
+              payload: payload.params
+            });
+            yield put({
+              type: 'fetchSubRange',
+              payload: payload.params
+            });
+          } else {
+            yield put({
+              type: 'fetchList',
+              payload: payload.params
+            });
+            yield put({
+              type: 'fetchSubList',
+              payload: payload.params
+            });
+          }
           yield put({
-            type: 'fetchRange',
+            type: 'fetchProgress',
             payload: payload.params
-          });
+          })
           yield put({
-            type: 'fetchSubRange',
+            type: 'fetchSubProgress',
             payload: payload.params
-          });
-        } else {
-          yield put({
-            type: 'fetchList',
-            payload: payload.params
-          });
-          yield put({
-            type: 'fetchSubList',
-            payload: payload.params
-          });
+          })
         }
-        yield put({
-          type: 'fetchProgress',
-          payload: payload.params
-        })
-        yield put({
-          type: 'fetchSubProgress',
-          payload: payload.params
-        })
         message.success('新增成功');
       } else {
         message.error(msg);
@@ -213,7 +216,7 @@ const Model = {
   },
   reducers: {
     current(state, {payload}) {
-      return {...state, currentObject: payload,};
+      return {...state, currentObject: payload.object, extData: payload.extData,};
     },
     query(state, {payload}) {
       return {...state, ...payload,};
@@ -229,6 +232,7 @@ const Model = {
         subData: [],
         subTotal: 0,
         subProgress: {},
+        extData: {},
       };
     },
   },

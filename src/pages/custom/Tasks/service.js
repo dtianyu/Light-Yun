@@ -121,10 +121,11 @@ export async function querySingle(params) {
         ...eapAppToken,
       },
     });
-    const {code, object} = response;
+    const {code, object, extData} = response;
     if (code < '300') {
       return {
-        ...object,
+        object,
+        extData,
       };
     } else {
       return {
