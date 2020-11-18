@@ -1,9 +1,10 @@
 import {
+  add,
+  update,
+  remove,
   queryList,
   querySummary,
-  add,
-  remove,
-  update,
+  queryDemand,
 } from '@/pages/ProductionMarketing/services/ProductionPlan';
 import { message } from 'antd';
 
@@ -31,6 +32,14 @@ const Model = {
       const response = yield call(querySummary, payload);
       yield put({
         type: 'summary',
+        payload: response ? response : {},
+      });
+    },
+    *fetchDemand({ payload }, { call, put }) {
+      // console.log(payload);
+      const response = yield call(queryDemand, payload);
+      yield put({
+        type: 'demand',
         payload: response ? response : {},
       });
     },
@@ -72,6 +81,9 @@ const Model = {
     summary(state, { payload }) {
       return { ...state, summaryData: payload.data };
     },
+    demand(state, { payload }) {
+      return { ...state, demandData: payload.data };
+    },
     clear() {
       return {
         currentObject: {},
@@ -79,6 +91,7 @@ const Model = {
         total: 0,
         extData: {},
         summaryData: [],
+        demandData: [],
       };
     },
   },

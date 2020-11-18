@@ -62,7 +62,6 @@ const UpdateForm = (props) => {
         onCancel={onCancel}
         onOk={() => {
           form.validateFields().then((fieldsValue) => {
-            form.resetFields();
             const values = {
               ...fieldsValue,
               formdate: local2UTC(fieldsValue.formdate),

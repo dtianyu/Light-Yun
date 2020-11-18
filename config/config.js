@@ -152,6 +152,12 @@ export default defineConfig({
                   component: './ProductionMarketing/ProductionPlan/components/PlanDetail',
                   hideInMenu: true,
                 },
+                {
+                  name: 'production-demand',
+                  icon: 'smile',
+                  path: '/production-marketing/production-demand',
+                  component: './ProductionMarketing/ProductionDemand',
+                },
               ],
             },
             {

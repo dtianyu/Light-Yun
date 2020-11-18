@@ -67,6 +67,36 @@ export async function querySummary(params) {
   };
 }
 
+export async function queryDemand(params) {
+  let q = '/demand';
+  let f = '/f';
+  let s = '/s';
+  if (params.mon) {
+    f = `${f};mon=${params.mon}`;
+  }
+  if (params.productSeries) {
+    f = `${f};productSeries=${params.productSeries}`;
+  }
+  if (params.itemModel) {
+    f = `${f};itemModel=${params.itemModel}`;
+  }
+  q = `${url}${q}${f}${s}`;
+  const response = await request(q, {
+    params: {
+      offset: (params.current - 1) * params.pageSize,
+      pageSize: params.pageSize,
+      ...eapAppToken,
+    },
+  });
+  const { code, data, count } = response;
+  return {
+    data,
+    page: params.current,
+    success: code === '200',
+    total: count,
+  };
+}
+
 export async function add(params) {
   const response = await request(url, {
     method: 'POST',

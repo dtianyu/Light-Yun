@@ -10,6 +10,7 @@ import CreateForm from '@/pages/ProductionMarketing/ProductionPlan/components/Cr
 
 const ProductionPlan = (props) => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [analysisData, setAnalysisData] = useState([]);
   const [sheetData, setSheetData] = useState([]);
 
   const [queryMonth, setQueryMonth] = useState(moment().format('YYYYMM'));
@@ -31,7 +32,7 @@ const ProductionPlan = (props) => {
         },
       });
       await dispatch({
-        type: 'productionPlanModel/fetchSummary',
+        type: 'productionPlanModel/fetchDemand',
         payload: {
           mon: queryMonth,
           current: 1,
@@ -57,10 +58,29 @@ const ProductionPlan = (props) => {
       hideInTable: true,
     });
     columns.push({
+      title: '产品分类',
+      dataIndex: 'productSeries',
+      hideInTable: true,
+    });
+    columns.push({
       title: '产品型号',
       dataIndex: 'itemModel',
       width: 160,
       fixed: 'left',
+    });
+    columns.push({
+      title: '类别',
+      dataIndex: 'kind',
+      width: 100,
+      fixed: 'left',
+      valueEnum: {
+        10: { text: '订单', status: 'Warning' },
+        20: { text: '库存', status: 'Success' },
+        30: { text: '在制', status: 'Processing' },
+        40: { text: '外采', status: 'Processing' },
+        50: { text: '制令', status: 'Default' },
+      },
+      hideInSearch: true,
     });
     // console.log(moment(queryMonth));
     let days = moment(queryMonth).endOf('month').date();
@@ -130,7 +150,7 @@ const ProductionPlan = (props) => {
   useEffect(() => {
     if (dispatch) {
       dispatch({
-        type: 'productionPlanModel/fetchSummary',
+        type: 'productionPlanModel/fetchDemand',
         payload: {
           mon: queryMonth,
           current: 1,
@@ -140,13 +160,17 @@ const ProductionPlan = (props) => {
     }
   }, []);
 
+  useEffect(() => {
+    setAnalysisData(data);
+  }, [data]);
+
   const handleFormSearch = (params) => {
     // console.log(params);
     if (params.mon) {
       setQueryMonth(params.mon);
       if (dispatch) {
         dispatch({
-          type: 'productionPlanModel/fetchSummary',
+          type: 'productionPlanModel/fetchDemand',
           payload: {
             ...params,
             current: 1,
@@ -169,7 +193,7 @@ const ProductionPlan = (props) => {
   return (
     <PageHeaderWrapper>
       <ProTable
-        headerTitle="计划列表"
+        headerTitle="需求分析"
         rowKey="index"
         toolBarRender={(action, { selectedRows }) => [
           <Button
@@ -186,36 +210,11 @@ const ProductionPlan = (props) => {
         ]}
         actionRef={actionRef}
         columns={columns}
-        dataSource={data}
+        dataSource={analysisData}
         pagination={false}
         bordered
         scroll={{ x: 2500 }}
         onSubmit={handleFormSearch}
-        summary={(pageData) => {
-          // console.log(pageData);
-          let sum = 0;
-          pageData.forEach(({ total }) => {
-            sum += total;
-          });
-          summaryData.map((sd, index) => {
-            let col = sd[0];
-            let data = 0;
-            pageData.forEach(({ [col]: value }) => {
-              if (value) {
-                data += value;
-              }
-            });
-            sd[1] = data;
-          });
-
-          return (
-            <Table.Summary.Row style={{ textAlign: 'right' }}>
-              <Table.Summary.Cell index={0}>合计</Table.Summary.Cell>
-              {summaryData.map((sd, index) => TableSummaryCell(index + 1, sd[1]))}
-              <Table.Summary.Cell>{sum}</Table.Summary.Cell>
-            </Table.Summary.Row>
-          );
-        }}
       />
       <CreateForm
         onFinish={async (value) => {
@@ -234,9 +233,9 @@ const ProductionPlan = (props) => {
 
 export default connect(({ user, productionPlanModel, loading }) => ({
   currentUser: user.currentUser,
-  data: productionPlanModel.summaryData,
+  data: productionPlanModel.demandData,
   extDate: productionPlanModel.extDate,
   loading:
-    loading.effects['productionPlanModel/fetchSummary'] ||
+    loading.effects['productionPlanModel/fetchDemand'] ||
     loading.effects['productionPlanModel/add'],
 }))(ProductionPlan);

@@ -60,4 +60,5 @@ export default {
   'menu.production-marketing.order-detail': '订单详情',
   'menu.production-marketing.production-plan': '生产计划',
   'menu.production-marketing.plan-detail': '计划详情',
+  'menu.production-marketing.production-demand': '需求分析',
 };
