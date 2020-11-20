@@ -10,7 +10,6 @@ import CreateForm from '@/pages/ProductionMarketing/ProductionPlan/components/Cr
 
 const ProductionPlan = (props) => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [analysisData, setAnalysisData] = useState([]);
   const [sheetData, setSheetData] = useState([]);
 
   const [queryMonth, setQueryMonth] = useState(moment().format('YYYYMM'));
@@ -160,10 +159,6 @@ const ProductionPlan = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    setAnalysisData(data);
-  }, [data]);
-
   const handleFormSearch = (params) => {
     // console.log(params);
     if (params.mon) {
@@ -210,7 +205,7 @@ const ProductionPlan = (props) => {
         ]}
         actionRef={actionRef}
         columns={columns}
-        dataSource={analysisData}
+        dataSource={data}
         pagination={false}
         bordered
         scroll={{ x: 2500 }}

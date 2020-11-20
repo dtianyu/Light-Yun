@@ -57,6 +57,11 @@ const ProductionPlan = (props) => {
       hideInTable: true,
     });
     columns.push({
+      title: '产品分类',
+      dataIndex: 'productSeries',
+      hideInTable: true,
+    });
+    columns.push({
       title: '产品型号',
       dataIndex: 'itemModel',
       width: 160,

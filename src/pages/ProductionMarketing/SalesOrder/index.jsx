@@ -412,7 +412,7 @@ const TableList = () => {
         pagination={{
           showSizeChanger: true,
         }}
-        scroll={{ x: 2600 }}
+        scroll={{ x: 2800 }}
         expandable={{
           expandedRowRender: (record) => (
             <>

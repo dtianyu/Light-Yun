@@ -16,7 +16,7 @@ const CreateForm = (props) => {
 
   const [form] = Form.useForm();
 
-  const { modalVisible, modalWidth, onFinish: handleAdd, onCancel } = props;
+  const { initialValues, modalVisible, modalWidth, onFinish: handleAdd, onCancel } = props;
 
   const formItemLayout = {
     labelCol: {
@@ -75,7 +75,11 @@ const CreateForm = (props) => {
           });
         }}
       >
-        <Form form={form} {...formItemLayout} initialValues={{ company: 'C' }}>
+        <Form
+          form={form}
+          {...formItemLayout}
+          initialValues={initialValues ? initialValues : { company: 'C' }}
+        >
           <FormItem
             label="公司"
             name="company"

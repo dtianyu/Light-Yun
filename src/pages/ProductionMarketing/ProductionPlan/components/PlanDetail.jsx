@@ -1,19 +1,42 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, history } from 'umi';
-import { PlusOutlined } from '@ant-design/icons';
-import { Modal, Button, Table, message } from 'antd';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import { Modal, Button, Table, message, Dropdown, Menu } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import { local2UTC, utc2Local } from '@/pages/comm';
-import { RowOperation } from '@/components/RowOperation';
 import CreateForm from '@/pages/ProductionMarketing/ProductionPlan/components/CreateForm';
 import UpdateForm from '@/pages/ProductionMarketing/ProductionPlan/components/UpdateForm';
+import * as PropTypes from 'prop-types';
+
+const RowOperation = ({ item, operate }) => (
+  <Dropdown
+    overlay={
+      <Menu onClick={async ({ key }) => operate(key, item)}>
+        <Menu.Item key="0">详情</Menu.Item>
+        {item.status === 'N' ? <Menu.Item key="e">修改</Menu.Item> : null}
+        {item.status === 'N' ? <Menu.Item key="d">删除</Menu.Item> : null}
+        {item.status === 'N' ? <Menu.Item key="v">确认</Menu.Item> : null}
+        {item.status === 'V' ? <Menu.Item key="r">还原</Menu.Item> : null}
+        <Menu.Item key="copy">拷贝</Menu.Item>
+      </Menu>
+    }
+  >
+    <a>
+      操作 <DownOutlined />
+    </a>
+  </Dropdown>
+);
+
+RowOperation.propTypes = {
+  item: PropTypes.object.isRequired,
+  operate: PropTypes.func.isRequired,
+};
 
 const PlanDetail = (props) => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [modalReadOnly, setModalReadOnly] = useState(false);
-  const [planData, setPlanData] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [currentObject, setCurrentObject] = useState({});
@@ -184,6 +207,22 @@ const PlanDetail = (props) => {
           },
         });
         break;
+      case 'copy':
+        // copy
+        value.formid = '';
+        value.formdate = null;
+        value.status = 'N';
+        Modal.confirm({
+          title: '拷贝',
+          content: `确定拷贝${formid}吗？`,
+          okText: '确认',
+          cancelText: '取消',
+          onOk: async () => {
+            setCurrentObject(value);
+            setCreateModalVisible(true);
+          },
+        });
+        break;
       default:
         break;
     }
@@ -244,9 +283,9 @@ const PlanDetail = (props) => {
       key: 'status',
       hideInSearch: true,
       valueEnum: {
-        all: {text: '全部',},
-        N: {text: '未确认', value: 'N',},
-        V: {text: '已确认', value: 'V',},
+        all: { text: '全部' },
+        N: { text: '未确认', value: 'N' },
+        V: { text: '已确认', value: 'V' },
       },
     },
     {
@@ -277,10 +316,6 @@ const PlanDetail = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    setPlanData(data);
-  }, [data]);
-
   const handlePaginationChange = (page, pageSize) => {
     setPage(page);
     setPageSize(pageSize);
@@ -308,13 +343,16 @@ const PlanDetail = (props) => {
             <Button
               icon={<PlusOutlined />}
               type="primary"
-              onClick={() => setCreateModalVisible(true)}
+              onClick={() => {
+                setCurrentObject({});
+                setCreateModalVisible(true);
+              }}
             >
               新建
             </Button>,
           ]}
           columns={columns}
-          dataSource={planData}
+          dataSource={data}
           pagination={{
             showSizeChanger: true,
             total: total,
@@ -349,10 +387,14 @@ const PlanDetail = (props) => {
               setCreateModalVisible(false);
             }
           }}
-          onCancel={() => setCreateModalVisible(false)}
+          onCancel={() => {
+            setCreateModalVisible(false);
+            setCurrentObject({});
+          }}
           modalVisible={createModalVisible}
+          initialValues={Object.keys(currentObject).length > 0 ? currentObject : null}
         />
-        {currentObject && Object.keys(currentObject).length ? (
+        {Object.keys(currentObject).length > 0 ? (
           <UpdateForm
             onFinish={async (value) => {
               const success = await handleUpdate({ ...currentObject, ...value });
