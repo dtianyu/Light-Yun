@@ -211,13 +211,12 @@ const TableList = () => {
           okText: '确认',
           cancelText: '取消',
           onOk: async () => {
-            const success = await handleAdd(value);
-
-            if (success) {
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
+            setCurrentObject({
+              ...value,
+              formdate: value.formdate ? utc2Local(value.formdate) : null,
+              demandDate: value.demandDate ? utc2Local(value.demandDate) : null,
+            });
+            setCreateModalVisible(true);
           },
         });
         break;
@@ -429,14 +428,18 @@ const TableList = () => {
 
           if (success) {
             setCreateModalVisible(false);
-
+            setCurrentObject({});
             if (actionRef.current) {
               actionRef.current.reload();
             }
           }
         }}
-        onCancel={() => setCreateModalVisible(false)}
+        onCancel={() => {
+          setCreateModalVisible(false);
+          setCurrentObject({});
+        }}
         modalVisible={createModalVisible}
+        initialValues={Object.keys(currentObject).length > 0 ? currentObject : null}
       />
       {currentObject && Object.keys(currentObject).length ? (
         <UpdateForm

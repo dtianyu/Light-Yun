@@ -87,6 +87,7 @@ const PlanTable = ({
       },
     },
   ];
+
   return (
     <>
       <Table loading={loading} columns={columns} dataSource={value} pagination={false} />

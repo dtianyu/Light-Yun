@@ -127,6 +127,19 @@ export default defineConfig({
               icon: 'home',
               routes: [
                 {
+                  name: 'product',
+                  icon: 'smile',
+                  path: '/production-marketing/product',
+                  component: './ProductionMarketing/Product',
+                },
+                {
+                  name: 'product-bom',
+                  icon: 'smile',
+                  path: '/production-marketing/product-bom',
+                  component: './ProductionMarketing/Product/components/BOM',
+                  hideInMenu: true,
+                },
+                {
                   name: 'sales-order',
                   icon: 'smile',
                   path: '/production-marketing/sales-order',

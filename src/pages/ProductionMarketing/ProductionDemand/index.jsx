@@ -81,7 +81,6 @@ const ProductionPlan = (props) => {
       },
       hideInSearch: true,
     });
-    // console.log(moment(queryMonth));
     let days = moment(queryMonth).endOf('month').date();
     for (let i = 1; i <= days; i++) {
       let d = moment(queryMonth).set('date', i);
@@ -173,16 +172,14 @@ const ProductionPlan = (props) => {
           },
         });
       }
+    } else {
+      message.warning('请输入查询年月');
     }
   };
 
   const handleTableExport = () => {
     const toExcel = new ExportJsonExcel(option);
     toExcel.saveExcel();
-  };
-
-  const TableSummaryCell = (index, value) => {
-    return <Table.Summary.Cell index={index}>{value}</Table.Summary.Cell>;
   };
 
   return (

@@ -56,6 +56,8 @@ export default {
   'menu.custom.tasks': '任务清单',
   'menu.custom.taskEdit': '编辑任务',
   'menu.production-marketing': '产销协调',
+  'menu.production-marketing.product': '产品信息',
+  'menu.production-marketing.product-bom': '用料清单',
   'menu.production-marketing.sales-order': '营业订单',
   'menu.production-marketing.order-detail': '订单详情',
   'menu.production-marketing.production-plan': '生产计划',

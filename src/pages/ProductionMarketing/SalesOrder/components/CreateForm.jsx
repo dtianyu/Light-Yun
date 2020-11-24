@@ -3,7 +3,7 @@ import { Modal, Form, Input, InputNumber, Button, Radio, Select, DatePicker, mes
 import SystemUser from '@/pages/components/EAP/SystemUser';
 import Customer from '@/pages/components/ERP/Customer';
 import * as moment from 'moment';
-import {formatDateTime, local2UTC} from '@/pages/comm';
+import { formatDateTime, local2UTC } from '@/pages/comm';
 import ItemModel from '@/pages/components/ERP/ItemModel';
 import ProductSeriesSelect from '@/pages/components/ERP/ProductSeriesSelect';
 
@@ -21,7 +21,7 @@ const CreateForm = (props) => {
 
   const [form] = Form.useForm();
 
-  const { modalVisible, modalWidth, onFinish: handleAdd, onCancel } = props;
+  const { initialValues, modalVisible, modalWidth, onFinish: handleAdd, onCancel } = props;
 
   const formItemLayout = {
     labelCol: {
@@ -96,7 +96,11 @@ const CreateForm = (props) => {
           });
         }}
       >
-        <Form form={form} {...formItemLayout} initialValues={{ company: 'C' }}>
+        <Form
+          form={form}
+          {...formItemLayout}
+          initialValues={initialValues ? initialValues : { company: 'C' }}
+        >
           <FormItem
             label="接单公司"
             name="company"
@@ -346,4 +350,5 @@ const CreateForm = (props) => {
     </>
   );
 };
+
 export default CreateForm;
