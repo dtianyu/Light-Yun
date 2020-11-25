@@ -257,7 +257,7 @@ const BOM = (props) => {
           onFinish={async (value) => {
             let seq;
             if (!value.seq || value.seq === 0) {
-              seq = currentObject.BOM ? currentObject.BOM.length + 1 : 1;
+              seq = currentObject.BOM ? (currentObject.BOM.length + 1) * 10 : 10;
             } else {
               seq = value.seq;
             }
@@ -479,6 +479,18 @@ const PartUpdateForm = (props) => {
         }}
       >
         <Form form={form} {...formItemLayout} initialValues={values}>
+          <FormItem
+            label="序号"
+            name="seq"
+            rules={[
+              {
+                required: true,
+                message: '请输入序号',
+              },
+            ]}
+          >
+            <InputNumber placeholder="数字" />
+          </FormItem>
           <FormItem label="品号" style={{ marginBottom: 0 }} required={true}>
             <Input.Group compact={true}>
               <FormItem

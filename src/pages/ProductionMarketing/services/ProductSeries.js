@@ -1,20 +1,17 @@
 import request from '@/utils/request';
 import { eapAppToken } from '@/pages/comm';
 
-const url = '/jrs/api/eap/product';
+const url = '/jrs/api/eap/productseries';
 
 export async function queryList(params) {
   let q = '/pagination';
   let f = '/f';
-  let s = '/s;itemno=ASC';
+  let s = '/s;series=ASC';
   if (params.company) {
     f = `${f};company=${params.company}`;
   }
   if (params.series) {
     f = `${f};series=${params.series}`;
-  }
-  if (params.itemModel) {
-    f = `${f};itemModel=${params.itemModel}`;
   }
   q = `${url}${q}${f}${s}`;
   const response = await request(q, {
@@ -43,14 +40,6 @@ export async function queryByUID(params) {
       },
     });
     const { code, object, extData } = response;
-
-    if (object.BOM) {
-      object.BOM.map((item) => {
-        if (item.product) {
-          item.children = item.product.BOM;
-        }
-      });
-    }
 
     if (code < '300') {
       return {

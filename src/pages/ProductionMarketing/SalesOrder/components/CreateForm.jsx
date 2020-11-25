@@ -5,7 +5,7 @@ import Customer from '@/pages/components/ERP/Customer';
 import * as moment from 'moment';
 import { formatDateTime, local2UTC } from '@/pages/comm';
 import ItemModel from '@/pages/components/ERP/ItemModel';
-import ProductSeriesSelect from '@/pages/components/ERP/ProductSeriesSelect';
+import ProductSeriesSelect from '@/pages/ProductionMarketing/components/ProductSeriesSelect';
 
 const FormItem = Form.Item;
 const { Option } = Select;

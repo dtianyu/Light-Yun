@@ -22,7 +22,7 @@ import { local2UTC, utc2Local } from '@/pages/comm';
 import Customer from '@/pages/components/ERP/Customer';
 import ItemModel from '@/pages/components/ERP/ItemModel';
 import SystemUser from '@/pages/components/EAP/SystemUser';
-import ProductSeriesSelect from '@/pages/components/ERP/ProductSeriesSelect';
+import ProductSeriesSelect from '@/pages/ProductionMarketing/components/ProductSeriesSelect';
 import PlanTable from '@/pages/ProductionMarketing/SalesOrder/components/PlanTable';
 import { add, update, remove } from '@/pages/ProductionMarketing/services/SalesOrderSchedule';
 

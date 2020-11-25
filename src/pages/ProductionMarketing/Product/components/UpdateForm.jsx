@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, InputNumber, Button, Select, message } from 'antd';
 import ItemModel from '@/pages/components/ERP/ItemModel';
-import ProductSeriesSelect from '@/pages/components/ERP/ProductSeriesSelect';
+import ProductSeriesSelect from '@/pages/ProductionMarketing/components/ProductSeriesSelect';
 
 const FormItem = Form.Item;
 const { Option } = Select;
