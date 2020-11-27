@@ -61,7 +61,7 @@ const CreateForm = (props) => {
       return;
     }
     if (series === undefined || series === null || series === '') {
-      message.warning('请先选择产品类别');
+      message.warning('请先选择产品系列');
       return;
     }
     setItemModelModalVisible(true);
@@ -123,14 +123,14 @@ const CreateForm = (props) => {
               <Option value="C">上海汉钟</Option>
             </Select>
           </FormItem>
-          <FormItem label="产品类别" style={{ marginBottom: 0 }} required={true}>
+          <FormItem label="产品系列" style={{ marginBottom: 0 }} required={true}>
             <Input.Group compact={true}>
               <FormItem
                 name="productSeries"
                 rules={[
                   {
                     required: true,
-                    message: '请输入产品类别',
+                    message: '请输入产品系列',
                   },
                 ]}
               >
@@ -141,7 +141,7 @@ const CreateForm = (props) => {
                     });
                     setCurrentSeries(value);
                   }}
-                  placeholder="产品类别"
+                  placeholder="产品系列"
                 />
               </FormItem>
               <FormItem

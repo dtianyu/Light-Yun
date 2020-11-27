@@ -127,6 +127,12 @@ export default defineConfig({
               icon: 'home',
               routes: [
                 {
+                  name: 'product-series',
+                  icon: 'smile',
+                  path: '/production-marketing/product-series',
+                  component: './ProductionMarketing/ProductSeries',
+                },
+                {
                   name: 'product',
                   icon: 'smile',
                   path: '/production-marketing/product',
@@ -170,6 +176,13 @@ export default defineConfig({
                   icon: 'smile',
                   path: '/production-marketing/production-demand',
                   component: './ProductionMarketing/ProductionDemand',
+                },
+                {
+                  name: 'demand-detail',
+                  icon: 'smile',
+                  path: '/production-marketing/demand-detail',
+                  component: './ProductionMarketing/ProductionDemand/components/DemandDetail',
+                  hideInMenu: true,
                 },
               ],
             },

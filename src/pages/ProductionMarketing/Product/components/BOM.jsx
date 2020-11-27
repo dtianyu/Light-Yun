@@ -16,6 +16,7 @@ import ProTable from '@ant-design/pro-table';
 import { PlusOutlined } from '@ant-design/icons';
 import { add, update, remove } from '@/pages/ProductionMarketing/services/BOM';
 import Item from '@/pages/components/ERP/Item';
+import SubstituteTable from '@/pages/ProductionMarketing/Product/components/SubstituteTable';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -23,6 +24,7 @@ const { TextArea } = Input;
 const BOM = (props) => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
+  const [substituteModalVisible, setSubstituteModalVisible] = useState(false);
   const [currentPart, setCurrentPart] = useState({});
   const [readOnly, setReadOnly] = useState(false);
 
@@ -178,6 +180,18 @@ const BOM = (props) => {
             >
               编辑
             </a>
+            <Divider type="vertical" />{' '}
+            <a
+              onClick={(e) => {
+                if (readOnly) {
+                  return;
+                }
+                setSubstituteModalVisible(true);
+                setCurrentPart(item);
+              }}
+            >
+              替代
+            </a>
             <Divider type="vertical" />
             <Popconfirm
               title="是否要删除此行？"
@@ -226,81 +240,89 @@ const BOM = (props) => {
   }, [currentObject]);
 
   return (
-    <>
-      <PageHeaderWrapper
-        title={'产品简名' + currentObject.itemModel}
-        onBack={() => window.history.back()}
-        content={product}
-      >
-        <ProTable
-          headerTitle="产品结构"
-          rowKey="id"
-          toolBarRender={(action, { selectedRows }) => [
-            <Button
-              icon={<PlusOutlined />}
-              type="primary"
-              onClick={() => {
-                setCreateModalVisible(true);
-              }}
-              disabled={readOnly}
-            >
-              新建
-            </Button>,
-          ]}
-          columns={columns}
-          dataSource={currentObject.BOM ? currentObject.BOM : []}
-          pagination={false}
-          search={false}
-          loading={loading}
-        />
-        <PartCreateForm
-          onFinish={async (value) => {
-            let seq;
-            if (!value.seq || value.seq === 0) {
-              seq = currentObject.BOM ? (currentObject.BOM.length + 1) * 10 : 10;
-            } else {
-              seq = value.seq;
-            }
-            let data = {
-              ...value,
-              pid: currentObject.id,
-              seq: seq,
-              category: currentObject.category,
-              series: currentObject.series,
-            };
+    <PageHeaderWrapper
+      title={'产品简名' + currentObject.itemModel}
+      onBack={() => window.history.back()}
+      content={product}
+    >
+      <ProTable
+        headerTitle="产品结构"
+        rowKey="id"
+        toolBarRender={(action, { selectedRows }) => [
+          <Button
+            icon={<PlusOutlined />}
+            type="primary"
+            onClick={() => {
+              setCreateModalVisible(true);
+            }}
+            disabled={readOnly}
+          >
+            新建
+          </Button>,
+        ]}
+        columns={columns}
+        dataSource={currentObject.BOM ? currentObject.BOM : []}
+        pagination={false}
+        search={false}
+        loading={loading}
+      />
+      <PartCreateForm
+        onFinish={async (value) => {
+          let seq;
+          if (!value.seq || value.seq === 0) {
+            seq = currentObject.BOM ? (currentObject.BOM.length + 1) * 10 : 10;
+          } else {
+            seq = value.seq;
+          }
+          let data = {
+            ...value,
+            pid: currentObject.id,
+            seq: seq,
+            category: currentObject.category,
+            series: currentObject.series,
+          };
 
-            const success = await handleAddPart(data);
+          const success = await handleAddPart(data);
+
+          if (success) {
+            setCreateModalVisible(false);
+          }
+        }}
+        onCancel={() => {
+          setCreateModalVisible(false);
+          setCurrentPart({});
+        }}
+        modalVisible={createModalVisible}
+      />
+      {currentPart && Object.keys(currentPart).length ? (
+        <PartUpdateForm
+          onFinish={async (value) => {
+            const success = await handleUpdatePart({ ...currentPart, ...value });
 
             if (success) {
-              setCreateModalVisible(false);
+              setUpdateModalVisible(false);
+              setCurrentPart({});
             }
           }}
           onCancel={() => {
-            setCreateModalVisible(false);
+            setUpdateModalVisible(false);
             setCurrentPart({});
           }}
-          modalVisible={createModalVisible}
+          modalVisible={updateModalVisible}
+          values={currentPart}
         />
-        {currentPart && Object.keys(currentPart).length ? (
-          <PartUpdateForm
-            onFinish={async (value) => {
-              const success = await handleUpdatePart({ ...currentPart, ...value });
-
-              if (success) {
-                setUpdateModalVisible(false);
-                setCurrentPart({});
-              }
-            }}
-            onCancel={() => {
-              setUpdateModalVisible(false);
-              setCurrentPart({});
-            }}
-            modalVisible={updateModalVisible}
-            values={currentPart}
-          />
-        ) : null}
-      </PageHeaderWrapper>
-    </>
+      ) : null}
+      <SubstituteTable
+        onCancel={() => {
+          setSubstituteModalVisible(false);
+        }}
+        onCreate={() => {
+          setSubstituteModalVisible(false);
+        }}
+        modalVisible={substituteModalVisible}
+        values={currentObject.substituteList}
+      />
+    </PageHeaderWrapper>
   );
 };
 
@@ -337,7 +359,7 @@ const PartCreateForm = (props) => {
         destroyOnClose
         title="Create"
         visible={modalVisible}
-        width={modalWidth ? modalWidth : 800}
+        width={modalWidth ? modalWidth : 1024}
         onCancel={onCancel}
         onOk={() => {
           form.validateFields().then((fieldsValue) => {

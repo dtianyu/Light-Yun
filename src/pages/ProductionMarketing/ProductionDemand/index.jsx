@@ -73,10 +73,10 @@ const ProductionPlan = (props) => {
       width: 100,
       fixed: 'left',
       valueEnum: {
-        10: { text: '订单', status: 'Warning' },
+        10: { text: '订单', status: 'Error' },
         20: { text: '库存', status: 'Success' },
         30: { text: '在制', status: 'Processing' },
-        40: { text: '外采', status: 'Processing' },
+        40: { text: '外采', status: 'Warning' },
         50: { text: '制令', status: 'Default' },
       },
       hideInSearch: true,
@@ -111,12 +111,13 @@ const ProductionPlan = (props) => {
             <a
               onClick={(e) => {
                 history.push({
-                  pathname: '/production-marketing/plan-detail',
+                  pathname: '/production-marketing/demand-detail',
                   query: {
                     company: item.company ? item.company : 'C',
-                    mon: item.mon,
+                    mon: queryMonth,
                     productSeries: item.productSeries,
                     itemModel: item.itemModel,
+                    queryDay: moment().format('YYYYMMDD'),
                   },
                 });
               }}

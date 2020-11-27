@@ -334,86 +334,84 @@ const PlanDetail = (props) => {
   };
 
   return (
-    <>
-      <PageHeaderWrapper title={'产品型号' + itemModel} onBack={() => window.history.back()}>
-        <ProTable
-          headerTitle="计划列表"
-          rowKey="id"
-          toolBarRender={(action, { selectedRows }) => [
-            <Button
-              icon={<PlusOutlined />}
-              type="primary"
-              onClick={() => {
-                setCurrentObject({});
-                setCreateModalVisible(true);
-              }}
-            >
-              新建
-            </Button>,
-          ]}
-          columns={columns}
-          dataSource={data}
-          pagination={{
-            showSizeChanger: true,
-            total: total,
-            onChange: (page, pageSize) => handlePaginationChange(page, pageSize),
-            onShowSizeChange: (current, size) => handlePaginationChange(current, size),
-          }}
-          loading={loading}
-          summary={(pageData) => {
-            // console.log(pageData);
-            let sum = 0;
-            pageData.forEach(({ qty }) => {
-              sum += qty;
-            });
+    <PageHeaderWrapper title={'产品型号' + itemModel} onBack={() => window.history.back()}>
+      <ProTable
+        headerTitle="计划列表"
+        rowKey="id"
+        toolBarRender={(action, { selectedRows }) => [
+          <Button
+            icon={<PlusOutlined />}
+            type="primary"
+            onClick={() => {
+              setCurrentObject({});
+              setCreateModalVisible(true);
+            }}
+          >
+            新建
+          </Button>,
+        ]}
+        columns={columns}
+        dataSource={data}
+        pagination={{
+          showSizeChanger: true,
+          total: total,
+          onChange: (page, pageSize) => handlePaginationChange(page, pageSize),
+          onShowSizeChange: (current, size) => handlePaginationChange(current, size),
+        }}
+        loading={loading}
+        summary={(pageData) => {
+          // console.log(pageData);
+          let sum = 0;
+          pageData.forEach(({ qty }) => {
+            sum += qty;
+          });
 
-            return (
-              <Table.Summary.Row style={{ textAlign: 'right' }}>
-                <Table.Summary.Cell>合计</Table.Summary.Cell>
-                <Table.Summary.Cell />
-                <Table.Summary.Cell />
-                <Table.Summary.Cell />
-                <Table.Summary.Cell />
-                <Table.Summary.Cell>{sum}</Table.Summary.Cell>
-              </Table.Summary.Row>
-            );
-          }}
-        />
-        <CreateForm
+          return (
+            <Table.Summary.Row style={{ textAlign: 'right' }}>
+              <Table.Summary.Cell>合计</Table.Summary.Cell>
+              <Table.Summary.Cell />
+              <Table.Summary.Cell />
+              <Table.Summary.Cell />
+              <Table.Summary.Cell />
+              <Table.Summary.Cell>{sum}</Table.Summary.Cell>
+            </Table.Summary.Row>
+          );
+        }}
+      />
+      <CreateForm
+        onFinish={async (value) => {
+          const success = await handleAdd(value);
+
+          if (success) {
+            setCreateModalVisible(false);
+          }
+        }}
+        onCancel={() => {
+          setCreateModalVisible(false);
+          setCurrentObject({});
+        }}
+        modalVisible={createModalVisible}
+        initialValues={Object.keys(currentObject).length > 0 ? currentObject : null}
+      />
+      {Object.keys(currentObject).length > 0 ? (
+        <UpdateForm
           onFinish={async (value) => {
-            const success = await handleAdd(value);
+            const success = await handleUpdate({ ...currentObject, ...value });
 
             if (success) {
-              setCreateModalVisible(false);
+              setUpdateModalVisible(false);
+              setCurrentObject({});
             }
           }}
           onCancel={() => {
-            setCreateModalVisible(false);
+            setUpdateModalVisible(false);
             setCurrentObject({});
           }}
-          modalVisible={createModalVisible}
-          initialValues={Object.keys(currentObject).length > 0 ? currentObject : null}
+          modalVisible={updateModalVisible}
+          values={currentObject}
         />
-        {Object.keys(currentObject).length > 0 ? (
-          <UpdateForm
-            onFinish={async (value) => {
-              const success = await handleUpdate({ ...currentObject, ...value });
-
-              if (success) {
-                setUpdateModalVisible(false);
-                setCurrentObject({});
-              }
-            }}
-            onCancel={() => {
-              setUpdateModalVisible(false);
-              setCurrentObject({});
-            }}
-            modalVisible={updateModalVisible}
-            values={currentObject}
-          />
-        ) : null}
-      </PageHeaderWrapper>
-    </>
+      ) : null}
+    </PageHeaderWrapper>
   );
 };
 

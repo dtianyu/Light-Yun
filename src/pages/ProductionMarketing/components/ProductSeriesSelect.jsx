@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Select } from 'antd';
+import { Select, Spin } from 'antd';
+import { queryList } from '@/pages/ProductionMarketing/services/ProductSeries';
 
 const { Option } = Select;
 
 const ProductSeriesSelect = (props) => {
   const [data, setData] = useState([]);
-  const [itemModel, setItemModel] = useState('');
+  const [series, setSeries] = useState('');
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    queryList({ current: 1, pageSize: 2000 }).then((response) => {
+      setData(response.data);
+    });
+  }, []);
 
   const selectChanged = (selected) => {
-    setItemModel(selected);
+    setSeries(selected);
     if (props.onChange) {
       props.onChange(selected);
     }
@@ -20,16 +25,15 @@ const ProductSeriesSelect = (props) => {
     <Select
       value={props.value}
       allowClear={true}
-      placeholder={props.placeholder || '产品类别'}
+      placeholder={props.placeholder || '产品系列'}
       filterOption={false}
       style={props.width ? { width: props.width } : { width: '100%' }}
       disabled={props.disabled}
       onChange={selectChanged}
     >
-      <Option value="PS">PS系列</Option>
-      <Option value="PR">PR系列</Option>
-      <Option value="PD">PD系列</Option>
-      <Option value="PL">PL系列</Option>
+      {data.map((d) => (
+        <Option value={d.series}>{d.description}</Option>
+      ))}
     </Select>
   );
 };

@@ -30,7 +30,7 @@ const SystemUserSelect = (props) => {
 
   fetchQuery = debounce(fetchQuery, 1500);
 
-  const handleChange = (value) => {
+  const selectChange = (value) => {
     setData([]);
     if (props.onChange) {
       props.onChange(value);
@@ -46,7 +46,7 @@ const SystemUserSelect = (props) => {
       notFoundContent={loading ? <Spin size="small" /> : null}
       filterOption={false}
       onSearch={fetchQuery}
-      onChange={handleChange}
+      onChange={selectChange}
       style={{ width: '100%' }}
       disabled={disabled}
     >

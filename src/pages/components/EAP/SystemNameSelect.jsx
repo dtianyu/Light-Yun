@@ -23,7 +23,7 @@ const SystemNameSelect = (props) => {
 
   return (
     <Select
-      value={props.value || systemName}
+      value={props.value}
       allowClear={true}
       placeholder="Select System"
       filterOption={false}
