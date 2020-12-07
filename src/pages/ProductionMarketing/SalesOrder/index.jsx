@@ -17,7 +17,7 @@ const RowOperation = ({ item, operate }) => (
         <Menu.Item key="0">详情</Menu.Item>
         {item.status !== 'V' ? <Menu.Item key="e">修改</Menu.Item> : null}
         {item.status !== 'V' ? <Menu.Item key="d">删除</Menu.Item> : null}
-        {item.status === 'Y' ? <Menu.Item key="v">结案</Menu.Item> : null}
+        {item.status === 'V' ? <Menu.Item key="r">还原</Menu.Item> : null}
         <Menu.Item key="copy">拷贝</Menu.Item>
       </Menu>
     }
@@ -33,12 +33,14 @@ RowOperation.propTypes = {
   operate: PropTypes.func.isRequired,
 };
 
-const TableList = () => {
+const TableList = (props) => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [modalReadOnly, setModalReadOnly] = useState(false);
   const [currentObject, setCurrentObject] = useState({});
   const actionRef = useRef();
+
+  const { currentUser } = props;
 
   /**
    * 添加
@@ -49,6 +51,7 @@ const TableList = () => {
     try {
       const res = await add({
         ...fields,
+        creator: currentUser ? currentUser.userid + currentUser.name : '',
       });
       const { code, msg } = res;
       if (code < '300') {
@@ -73,6 +76,7 @@ const TableList = () => {
     try {
       const res = await update({
         ...fields,
+        optuser: currentUser ? currentUser.userid + currentUser.name : '',
       });
       const { code, msg } = res;
       if (code < '300') {
@@ -141,7 +145,7 @@ const TableList = () => {
         Modal.confirm({
           title: '删除',
           content: `确定删除${formid}吗？`,
-          okText: '确认',
+          okText: '确定',
           cancelText: '取消',
           onOk: async () => {
             const success = await handleRemove(item.id);
@@ -163,7 +167,7 @@ const TableList = () => {
         Modal.confirm({
           title: '确认',
           content: `确定确认${formid}吗？`,
-          okText: '确认',
+          okText: '确定',
           cancelText: '取消',
           onOk: async () => {
             const success = await handleUpdate({ ...value });
@@ -181,11 +185,12 @@ const TableList = () => {
       case 'r':
         // revoke
         value.status = 'N';
+        value.currentStep = value.currentStep - 1;
 
         Modal.confirm({
           title: '还原',
           content: `确定还原${formid}吗？`,
-          okText: '确认',
+          okText: '确定',
           cancelText: '取消',
           onOk: async () => {
             const success = await handleUpdate({ ...value });
@@ -372,7 +377,19 @@ const TableList = () => {
         all: { text: '全部' },
         N: { text: '未确认', value: 'N' },
         V: { text: '已确认', value: 'V' },
-        X: { text: '已注销', value: 'X' },
+      },
+      hideInTable: true,
+      hideInSearch: true,
+    },
+    {
+      title: '进度',
+      dataIndex: 'currentStep',
+      valueEnum: {
+        0: { text: '营业', status: 'Error' },
+        1: { text: '技术', status: 'Processing' },
+        2: { text: '生管', status: 'Warning' },
+        3: { text: '待结案', status: 'Default' },
+        4: { text: '已结案', status: 'Success' },
       },
       width: 80,
       fixed: 'right',
@@ -468,4 +485,6 @@ const TableList = () => {
   );
 };
 
-export default TableList;
+export default connect(({ user }) => ({
+  currentUser: user.currentUser,
+}))(TableList);

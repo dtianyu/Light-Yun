@@ -1,3 +1,4 @@
+import React, {useState, useRef, useEffect} from 'react';
 import {DownOutlined, PlusOutlined} from '@ant-design/icons';
 import {
   Avatar,
@@ -15,7 +16,6 @@ import {
   Radio,
   Row
 } from 'antd';
-import React, {useState, useRef, useEffect} from 'react';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {connect, Link} from 'umi';
 import TaskNew from './components/TaskNew';

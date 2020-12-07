@@ -90,7 +90,13 @@ const PlanTable = ({
 
   return (
     <>
-      <Table loading={loading} columns={columns} dataSource={value} pagination={false} />
+      <Table
+        rowKey="id"
+        columns={columns}
+        dataSource={value}
+        pagination={false}
+        loading={loading}
+      />
       <Button
         style={{
           width: '100%',

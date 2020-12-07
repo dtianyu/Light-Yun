@@ -56,7 +56,7 @@ const UpdateForm = (props) => {
     <>
       <Modal
         destroyOnClose
-        title="Update"
+        title="Modify"
         visible={modalVisible}
         width={modalWidth ? modalWidth : 800}
         onCancel={onCancel}

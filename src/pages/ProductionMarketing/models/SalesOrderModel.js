@@ -35,9 +35,16 @@ const Model = {
       }
     },
     *update({ payload }, { call, put }) {
+      const uid = payload.data.UID;
       const res = yield call(update, payload.data);
       const { code, msg } = res;
       if (code < '300') {
+        yield put({
+          type: 'fetchCurrent',
+          payload: {
+            uid: uid,
+          },
+        });
         message.success('更新成功');
       } else {
         message.error(msg);

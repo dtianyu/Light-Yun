@@ -1,8 +1,8 @@
-import {stringify} from 'querystring';
-import {history} from 'umi';
-import {loginYun} from '@/services/login';
-import {setAuthority} from '@/utils/authority';
-import {getPageQuery} from '@/utils/utils';
+import { stringify } from 'querystring';
+import { history } from 'umi';
+import { loginYun } from '@/services/login';
+import { setAuthority } from '@/utils/authority';
+import { getPageQuery } from '@/utils/utils';
 
 const Model = {
   namespace: 'login',
@@ -11,7 +11,7 @@ const Model = {
     loginId: undefined,
   },
   effects: {
-    * login({payload}, {call, put}) {
+    *login({ payload }, { call, put }) {
       const response = yield call(loginYun, payload);
       yield put({
         type: 'changeLoginStatus',
@@ -21,7 +21,7 @@ const Model = {
       if (response.status === 'ok' || response.object.status === 'success') {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
-        let {redirect} = params;
+        let { redirect } = params;
 
         if (redirect) {
           const redirectUrlParams = new URL(redirect);
@@ -43,7 +43,7 @@ const Model = {
     },
 
     logout() {
-      const {redirect} = getPageQuery(); // Note: There may be security issues, please note
+      const { redirect } = getPageQuery(); // Note: There may be security issues, please note
 
       if (window.location.pathname !== '/user/login' && !redirect) {
         history.replace({
@@ -56,9 +56,14 @@ const Model = {
     },
   },
   reducers: {
-    changeLoginStatus(state, {payload}) {
+    changeLoginStatus(state, { payload }) {
       setAuthority(payload.object.currentAuthority);
-      return {...state, status: payload.object.status, type: payload.object.type, loginId: payload.object.userName};
+      return {
+        ...state,
+        status: payload.object.status,
+        type: payload.object.type,
+        loginId: payload.object.userName,
+      };
     },
   },
 };

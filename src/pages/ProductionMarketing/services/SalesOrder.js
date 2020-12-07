@@ -7,6 +7,18 @@ export async function queryList(params) {
   let q = '/pagination';
   let f = '/f';
   let s = '/s';
+  if (params.customer) {
+    f = `${f};customer=${params.customer}`;
+  }
+  if (params.itemModel) {
+    f = `${f};itemModel=${params.itemModel}`;
+  }
+  if (params.formid) {
+    f = `${f};formid=${params.formid}`;
+  }
+  if (params.currentStep) {
+    f = `${f};currentStep=${params.currentStep}`;
+  }
   q = `${url}${q}${f}${s}`;
   const response = await request(q, {
     params: {

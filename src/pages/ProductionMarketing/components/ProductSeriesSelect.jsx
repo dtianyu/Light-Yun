@@ -32,7 +32,7 @@ const ProductSeriesSelect = (props) => {
       onChange={selectChanged}
     >
       {data.map((d) => (
-        <Option value={d.series}>{d.description}</Option>
+        <Option key={d.id} value={d.series}>{d.description}</Option>
       ))}
     </Select>
   );

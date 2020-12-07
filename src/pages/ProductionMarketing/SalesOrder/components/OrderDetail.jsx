@@ -9,13 +9,10 @@ import {
   Input,
   InputNumber,
   message,
-  Modal,
-  Popover,
   Row,
   Select,
   Steps,
   Switch,
-  TimePicker,
 } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { local2UTC, utc2Local } from '@/pages/comm';
@@ -34,6 +31,7 @@ const { Step } = Steps;
 const OrderDetail = (props) => {
   const [currentCompany, setCurrentCompany] = useState('C');
   const [currentSeries, setCurrentSeries] = useState('');
+  const [currentStep, setCurrentStep] = useState(0);
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
   const [itemModelModalVisible, setItemModelModalVisible] = useState(false);
   const [userModalVisible, setUserModalVisible] = useState(false);
@@ -172,6 +170,7 @@ const OrderDetail = (props) => {
         prepareDate: currentObject.prepareDate ? utc2Local(currentObject.prepareDate) : null,
         deliveryDate: currentObject.deliveryDate ? utc2Local(currentObject.deliveryDate) : null,
       });
+      setCurrentStep(currentObject.currentStep);
     }
   }, [currentObject]);
 
@@ -201,6 +200,16 @@ const OrderDetail = (props) => {
     setItemModelModalVisible(true);
   };
 
+  const handleStepReject = () => {
+    setCurrentStep(currentStep - 1);
+    form?.submit();
+  };
+
+  const handleStepSubmit = () => {
+    setCurrentStep(currentStep + 1);
+    form?.submit();
+  };
+
   return (
     <>
       <Form
@@ -218,6 +227,9 @@ const OrderDetail = (props) => {
               : null,
             prepareDate: fieldsValue.prepareDate ? local2UTC(fieldsValue.prepareDate) : null,
             deliveryDate: fieldsValue.deliveryDate ? local2UTC(fieldsValue.deliveryDate) : null,
+            currentStep: currentStep,
+            optuser: currentUser ? currentUser.userid + currentUser.name : '',
+            status: extData.steps ? (currentStep === extData.steps.length ? 'V' : 'N') : 'N',
           };
           message.loading('正在更新');
           try {
@@ -234,7 +246,9 @@ const OrderDetail = (props) => {
       >
         <PageHeaderWrapper
           title={'订单编号' + formid}
-          onBack={() => window.history.back()}
+          onBack={() => {
+            window.history.back();
+          }}
           extra={
             <Fragment>
               <Button
@@ -254,12 +268,46 @@ const OrderDetail = (props) => {
               marginBottom: 24,
             }}
           >
-            <Steps current={2}>
-              <Step title="营业" description={'desc1'} />
-              <Step title="技术" description={'desc2'} />
-              <Step title="生管" />
-              <Step title="完成" />
-            </Steps>
+            {extData.steps && Object.keys(extData.steps).length ? (
+              <Steps current={currentStep}>
+                {extData.steps.map((step) => {
+                  if (currentStep === 0 && currentStep + 1 === step.seq) {
+                    return (
+                      <Step
+                        title={step.name}
+                        subTitle={step.cfmuser}
+                        description={
+                          <>
+                            <div>
+                              <a onClick={handleStepSubmit}>完成</a>
+                            </div>
+                          </>
+                        }
+                      />
+                    );
+                  } else if (currentStep !== 0 && currentStep + 1 === step.seq) {
+                    return (
+                      <Step
+                        title={step.name}
+                        subTitle={step.cfmuser}
+                        description={
+                          <>
+                            <div>
+                              <a onClick={handleStepReject}>退回</a>
+                            </div>
+                            <div>
+                              <a onClick={handleStepSubmit}>完成</a>
+                            </div>
+                          </>
+                        }
+                      />
+                    );
+                  } else {
+                    return <Step title={step.name} subTitle={step.cfmuser} description={<></>} />;
+                  }
+                })}
+              </Steps>
+            ) : null}
           </Card>
           <Card title="订单内容" bordered={false}>
             <Row gutter={16}>

@@ -90,6 +90,8 @@ const CreateForm = (props) => {
               manqty: 0,
               wipqty: 0,
               shipqty: 0,
+              currentStep: 0,
+              progress: 0,
               status: 'N',
             };
             handleAdd(values);

@@ -81,7 +81,15 @@ const ProductionPlan = (props) => {
       },
       hideInSearch: true,
     });
-    let days = moment(queryMonth).endOf('month').date();
+    let today = moment();
+    let lastday = moment(queryMonth).endOf('month');
+    let days = lastday.date();
+    let queryDay;
+    if (lastday > today) {
+      queryDay = moment(today).format('YYYYMMDD');
+    } else {
+      queryDay = moment(lastday).format('YYYYMMDD');
+    }
     for (let i = 1; i <= days; i++) {
       let d = moment(queryMonth).set('date', i);
       let col = 'd' + moment(d).format('YYYYMMDD');
@@ -107,24 +115,22 @@ const ProductionPlan = (props) => {
       valueType: 'option',
       render: (_, item) => {
         return (
-          <>
-            <a
-              onClick={(e) => {
-                history.push({
-                  pathname: '/production-marketing/demand-detail',
-                  query: {
-                    company: item.company ? item.company : 'C',
-                    mon: queryMonth,
-                    productSeries: item.productSeries,
-                    itemModel: item.itemModel,
-                    queryDay: moment().format('YYYYMMDD'),
-                  },
-                });
-              }}
-            >
-              详情
-            </a>
-          </>
+          <a
+            onClick={(e) => {
+              history.push({
+                pathname: '/production-marketing/demand-detail',
+                query: {
+                  company: item.company ? item.company : 'C',
+                  mon: queryMonth,
+                  productSeries: item.productSeries,
+                  itemModel: item.itemModel,
+                  queryDay: queryDay,
+                },
+              });
+            }}
+          >
+            详情
+          </a>
         );
       },
       width: 100,

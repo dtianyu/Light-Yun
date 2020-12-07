@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import {eapAppToken} from "@/pages/comm";
+import { eapAppToken } from '@/pages/comm';
 
 export async function queryProjectNotice() {
   return request('/api/project/notice');
@@ -21,36 +21,14 @@ export async function queryTask(params) {
   // console.log(q);
   const response = await request(q, {
     params: {
-      ...eapAppToken
+      ...eapAppToken,
     },
   });
-  const {code, data, count} = response;
+  const { code, data, count } = response;
   return {
     data,
     page: params.current,
     success: code === '200',
     total: count,
   };
-}
-
-export async function queryChartData(params) {
-  // console.log(params);
-  let url = '/jrs/api/eap/systemuser/chart';
-  if (params.userid) {
-    const response = await request(url, {
-      params: {
-        userid: params.userid,
-        ...eapAppToken
-      },
-    });
-    // ResponseObject JSON
-    const {object} = response;
-    return {
-      radarData: object.radarData,
-    };
-  } else {
-    return {
-      radarData: [],
-    };
-  }
 }

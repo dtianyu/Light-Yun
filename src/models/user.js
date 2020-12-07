@@ -1,12 +1,14 @@
-import {queryCurrent, query as queryUsers, queryYun} from '@/services/user';
+import { queryCurrent, query as queryUsers, queryYun } from '@/services/user';
 
 const UserModel = {
   namespace: 'user',
   state: {
     currentUser: {},
+    menuData: [],
+    radarData: [],
   },
   effects: {
-    * fetch(_, {call, put}) {
+    *fetch(_, { call, put }) {
       const response = yield call(queryUsers);
       yield put({
         type: 'save',
@@ -14,7 +16,7 @@ const UserModel = {
       });
     },
 
-    * fetchCurrent({payload}, {call, put}) {
+    *fetchCurrent({ payload }, { call, put }) {
       const response = yield call(queryYun, payload);
       yield put({
         type: 'setCurrentUser',
@@ -24,7 +26,12 @@ const UserModel = {
   },
   reducers: {
     setCurrentUser(state, action) {
-      return {...state, currentUser: action.payload.object || {}};
+      return {
+        ...state,
+        currentUser: action.payload.object || {},
+        menuData: action.payload.extData.menu || [],
+        radarData: action.payload.extData.radarData || [],
+      };
     },
 
     changeNotifyCount(

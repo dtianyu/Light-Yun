@@ -29,7 +29,7 @@ const DemandDetail = (props) => {
     columns.push({
       title: '产品型号',
       dataIndex: 'itemModel',
-      width: 160,
+      width: 180,
       fixed: 'left',
     });
     columns.push({
@@ -96,6 +96,7 @@ const DemandDetail = (props) => {
         search={false}
         bordered
         scroll={{ x: 2500 }}
+        style={{ maxHeight: 420 }}
         loading={loading}
       />
       <ProTable
