@@ -217,8 +217,6 @@ const Product = (props) => {
       title: '产品分类',
       dataIndex: 'category',
       key: 'category',
-      hideInTable: true,
-      hideInSearch: true,
     },
     {
       title: '产品系列',

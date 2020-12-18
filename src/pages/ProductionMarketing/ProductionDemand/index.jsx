@@ -10,9 +10,10 @@ import CreateForm from '@/pages/ProductionMarketing/ProductionPlan/components/Cr
 
 const ProductionPlan = (props) => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [queryMonth, setQueryMonth] = useState(moment().format('YYYYMM'));
+  const [queryFormType, setQueryFormType] = useState('');
   const [sheetData, setSheetData] = useState([]);
 
-  const [queryMonth, setQueryMonth] = useState(moment().format('YYYYMM'));
   const actionRef = useRef(undefined);
 
   const { currentUser, data, extData, dispatch, loading } = props;
@@ -58,6 +59,11 @@ const ProductionPlan = (props) => {
     });
     columns.push({
       title: '产品分类',
+      dataIndex: 'formType',
+      hideInTable: true,
+    });
+    columns.push({
+      title: '产品系列',
       dataIndex: 'productSeries',
       hideInTable: true,
     });
@@ -158,6 +164,7 @@ const ProductionPlan = (props) => {
         type: 'productionPlanModel/fetchDemand',
         payload: {
           mon: queryMonth,
+          formType: queryFormType,
           current: 1,
           pageSize: 2000,
         },
@@ -166,7 +173,9 @@ const ProductionPlan = (props) => {
   }, []);
 
   const handleFormSearch = (params) => {
-    // console.log(params);
+    if (params.formType) {
+      setQueryFormType(params.formType);
+    }
     if (params.mon) {
       setQueryMonth(params.mon);
       if (dispatch) {

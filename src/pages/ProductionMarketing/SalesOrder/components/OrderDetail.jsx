@@ -383,7 +383,7 @@ const OrderDetail = (props) => {
                       rules={[
                         {
                           required: true,
-                          message: '请输入产品类别',
+                          message: '请输入产品系列',
                         },
                       ]}
                     >

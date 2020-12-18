@@ -6,6 +6,7 @@ import Customer from '@/pages/components/ERP/Customer';
 import { formatDateTime, local2UTC } from '@/pages/comm';
 import ItemModel from '@/pages/components/ERP/ItemModel';
 import ProductSeriesSelect from '@/pages/ProductionMarketing/components/ProductSeriesSelect';
+import ProductCategorySelect from '@/pages/ProductionMarketing/components/ProductCategorySelect';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -13,6 +14,7 @@ const { TextArea } = Input;
 
 const UpdateForm = (props) => {
   const [currentCompany, setCurrentCompany] = useState('C');
+  const [currentCategory, setCurrentCategory] = useState('');
   const [currentSeries, setCurrentSeries] = useState('');
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
   const [itemModelModalVisible, setItemModelModalVisible] = useState(false);
@@ -114,18 +116,39 @@ const UpdateForm = (props) => {
               <Option value="C">上海汉钟</Option>
             </Select>
           </FormItem>
-          <FormItem label="产品类别" style={{ marginBottom: 0 }} required={true}>
+          <FormItem
+            label="产品分类"
+            name="formType"
+            rules={[
+              {
+                required: true,
+                message: '请输入产品分类',
+              },
+            ]}
+          >
+            <ProductCategorySelect
+              onChange={(value) => {
+                form.setFieldsValue({
+                  formType: value,
+                });
+                setCurrentCategory(value);
+              }}
+              placeholder="产品分类"
+            />
+          </FormItem>
+          <FormItem label="产品系列" style={{ marginBottom: 0 }} required={true}>
             <Input.Group compact={true}>
               <FormItem
                 name="productSeries"
                 rules={[
                   {
                     required: true,
-                    message: '请输入产品类别',
+                    message: '请输入产品系列',
                   },
                 ]}
               >
                 <ProductSeriesSelect
+                  category={currentCategory}
                   onChange={(value) => {
                     form.setFieldsValue({
                       productSeries: value,

@@ -4,7 +4,7 @@ import { eapAppToken } from '@/pages/comm';
 const url = '/jrs/api/eap/productionplan';
 
 export async function queryList(params) {
-  console.log(params);
+  // console.log(params);
   let q = '/pagination';
   let f = '/f';
   let s = '/s;formdate=ASC';
@@ -41,8 +41,14 @@ export async function querySummary(params) {
   let q = '/summary';
   let f = '/f';
   let s = '/s';
+  if (params.company) {
+    f = `${f};company=${params.company}`;
+  }
   if (params.mon) {
     f = `${f};mon=${params.mon}`;
+  }
+  if (params.formType && params.formType !== '') {
+    f = `${f};formType=${params.formType}`;
   }
   if (params.productSeries) {
     f = `${f};productSeries=${params.productSeries}`;
@@ -71,8 +77,14 @@ export async function queryDemand(params) {
   let q = '/demand';
   let f = '/f';
   let s = '/s';
+  if (params.company) {
+    f = `${f};company=${params.company}`;
+  }
   if (params.mon) {
     f = `${f};mon=${params.mon}`;
+  }
+  if (params.formType && params.formType !== '') {
+    f = `${f};formType=${params.formType}`;
   }
   if (params.productSeries) {
     f = `${f};productSeries=${params.productSeries}`;

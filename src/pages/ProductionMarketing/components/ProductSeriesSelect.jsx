@@ -8,11 +8,27 @@ const ProductSeriesSelect = (props) => {
   const [data, setData] = useState([]);
   const [series, setSeries] = useState('');
 
+  const { category } = props;
+
   useEffect(() => {
-    queryList({ current: 1, pageSize: 2000 }).then((response) => {
-      setData(response.data);
-    });
+    if (category) {
+      queryList({ category: category, current: 1, pageSize: 2000 }).then((response) => {
+        setData(response.data);
+      });
+    } else {
+      queryList({ current: 1, pageSize: 2000 }).then((response) => {
+        setData(response.data);
+      });
+    }
   }, []);
+
+  useEffect(() => {
+    if (category) {
+      queryList({ category: category, current: 1, pageSize: 2000 }).then((response) => {
+        setData(response.data);
+      });
+    }
+  }, [category]);
 
   const selectChanged = (selected) => {
     setSeries(selected);
@@ -32,7 +48,9 @@ const ProductSeriesSelect = (props) => {
       onChange={selectChanged}
     >
       {data.map((d) => (
-        <Option key={d.id} value={d.series}>{d.description}</Option>
+        <Option key={d.id} value={d.series}>
+          {d.description}
+        </Option>
       ))}
     </Select>
   );

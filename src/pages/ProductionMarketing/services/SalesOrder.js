@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { eapAppToken } from '@/pages/comm';
+import { eapAppToken, formatDateTime } from '@/pages/comm';
 
 const url = '/jrs/api/eap/salesorder';
 
@@ -10,11 +10,24 @@ export async function queryList(params) {
   if (params.customer) {
     f = `${f};customer=${params.customer}`;
   }
-  if (params.itemModel) {
-    f = `${f};itemModel=${params.itemModel}`;
+  if (params.formType) {
+    f = `${f};formType=${params.formType}`;
   }
   if (params.formid) {
     f = `${f};formid=${params.formid}`;
+  }
+  if (params.formdate && params.formdate.length === 2) {
+    f = `${f};formdateBegin=${formatDateTime(params.formdate[0])};formdateEnd=${formatDateTime(
+      params.formdate[1],
+    )}`;
+  }
+  if (params.deliveryDate && params.deliveryDate.length === 2) {
+    f = `${f};deliveryDateBegin=${formatDateTime(
+      params.deliveryDate[0],
+    )};deliveryDateEnd=${formatDateTime(params.deliveryDate[1])}`;
+  }
+  if (params.itemModel) {
+    f = `${f};itemModel=${params.itemModel}`;
   }
   if (params.currentStep) {
     f = `${f};currentStep=${params.currentStep}`;

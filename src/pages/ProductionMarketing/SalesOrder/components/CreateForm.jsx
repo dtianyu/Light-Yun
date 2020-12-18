@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { formatDateTime, local2UTC } from '@/pages/comm';
 import ItemModel from '@/pages/components/ERP/ItemModel';
 import ProductSeriesSelect from '@/pages/ProductionMarketing/components/ProductSeriesSelect';
+import ProductCategorySelect from '@/pages/ProductionMarketing/components/ProductCategorySelect';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -13,7 +14,7 @@ const { TextArea } = Input;
 
 const CreateForm = (props) => {
   const [currentCompany, setCurrentCompany] = useState('C');
-  const [currentCategory, setCurrentCategory] = useState('P');
+  const [currentCategory, setCurrentCategory] = useState('');
   const [currentSeries, setCurrentSeries] = useState('');
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
   const [itemModelModalVisible, setItemModelModalVisible] = useState(false);
@@ -82,7 +83,6 @@ const CreateForm = (props) => {
               ...fieldsValue,
               formid: '',
               formdate: fieldsValue.formdate ? local2UTC(fieldsValue.formdate) : null,
-              formType: currentCategory,
               demandDate: fieldsValue.demandDate ? local2UTC(fieldsValue.demandDate) : null,
               mon: formatDateTime(local2UTC(fieldsValue.demandDate), { format: 'YYYYMM' }),
               deliveryDate: fieldsValue.deliveryDate ? local2UTC(fieldsValue.deliveryDate) : null,
@@ -125,6 +125,26 @@ const CreateForm = (props) => {
               <Option value="C">上海汉钟</Option>
             </Select>
           </FormItem>
+          <FormItem
+            label="产品分类"
+            name="formType"
+            rules={[
+              {
+                required: true,
+                message: '请输入产品分类',
+              },
+            ]}
+          >
+            <ProductCategorySelect
+              onChange={(value) => {
+                form.setFieldsValue({
+                  formType: value,
+                });
+                setCurrentCategory(value);
+              }}
+              placeholder="产品分类"
+            />
+          </FormItem>
           <FormItem label="产品系列" style={{ marginBottom: 0 }} required={true}>
             <Input.Group compact={true}>
               <FormItem
@@ -137,6 +157,7 @@ const CreateForm = (props) => {
                 ]}
               >
                 <ProductSeriesSelect
+                  category={currentCategory}
                   onChange={(value) => {
                     form.setFieldsValue({
                       productSeries: value,

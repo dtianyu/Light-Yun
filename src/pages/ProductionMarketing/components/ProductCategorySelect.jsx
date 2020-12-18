@@ -25,6 +25,7 @@ const ProductCategorySelect = (props) => {
       onChange={selectChanged}
     >
       <Option value="P">P-真空</Option>
+      <Option value="AJ">AJ-空压机体</Option>
     </Select>
   );
 };

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, InputNumber, Button, Select, message } from 'antd';
 import ItemModel from '@/pages/components/ERP/ItemModel';
 import ProductSeriesSelect from '@/pages/ProductionMarketing/components/ProductSeriesSelect';
+import ProductCategorySelect from '@/pages/ProductionMarketing/components/ProductCategorySelect';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -9,7 +10,7 @@ const { TextArea } = Input;
 
 const UpdateForm = (props) => {
   const [currentCompany, setCurrentCompany] = useState('C');
-  const [currentCategory, setCurrentCategory] = useState('P');
+  const [currentCategory, setCurrentCategory] = useState('');
   const [currentSeries, setCurrentSeries] = useState('');
   const [itemModelModalVisible, setItemModelModalVisible] = useState(false);
 
@@ -93,6 +94,26 @@ const UpdateForm = (props) => {
             </Select>
           </FormItem>
           <FormItem
+            label="产品分类"
+            name="category"
+            rules={[
+              {
+                required: true,
+                message: '请输入产品分类',
+              },
+            ]}
+          >
+            <ProductCategorySelect
+              onChange={(value) => {
+                form.setFieldsValue({
+                  category: value,
+                });
+                setCurrentCategory(value);
+              }}
+              placeholder="产品分类"
+            />
+          </FormItem>
+          <FormItem
             label="产品系列"
             name="series"
             rules={[
@@ -103,6 +124,7 @@ const UpdateForm = (props) => {
             ]}
           >
             <ProductSeriesSelect
+              category={currentCategory}
               onChange={(value) => {
                 form.setFieldsValue({
                   productSeries: value,

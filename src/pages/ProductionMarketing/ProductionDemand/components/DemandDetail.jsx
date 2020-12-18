@@ -23,6 +23,11 @@ const DemandDetail = (props) => {
     });
     columns.push({
       title: '产品分类',
+      dataIndex: 'formType',
+      hideInTable: true,
+    });
+    columns.push({
+      title: '产品系列',
       dataIndex: 'productSeries',
       hideInTable: true,
     });

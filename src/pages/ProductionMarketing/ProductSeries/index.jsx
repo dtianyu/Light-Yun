@@ -5,6 +5,7 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import { RowOperation } from '@/components/RowOperation';
 import { add, update, remove, queryList } from '@/pages/ProductionMarketing/services/ProductSeries';
+import ProductCategorySelect from '@/pages/ProductionMarketing/components/ProductCategorySelect';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -279,8 +280,6 @@ const ProductSeries = () => {
 };
 
 const CreateForm = (props) => {
-  const [currentCategory, setCurrentCategory] = useState('P');
-
   const [form] = Form.useForm();
 
   const { modalVisible, modalWidth, onFinish: handleAdd, onCancel } = props;
@@ -317,7 +316,6 @@ const CreateForm = (props) => {
             form.resetFields();
             const values = {
               ...fieldsValue,
-              category: currentCategory,
               status: 'N',
             };
             handleAdd(values);
@@ -325,6 +323,25 @@ const CreateForm = (props) => {
         }}
       >
         <Form form={form} {...formItemLayout}>
+          <FormItem
+            label="产品分类"
+            name="category"
+            rules={[
+              {
+                required: true,
+                message: '请输入产品分类',
+              },
+            ]}
+          >
+            <ProductCategorySelect
+              onChange={(value) => {
+                form.setFieldsValue({
+                  category: value,
+                });
+              }}
+              placeholder="产品分类"
+            />
+          </FormItem>
           <FormItem
             label="产品系列"
             name="series"
@@ -396,6 +413,25 @@ const UpdateForm = (props) => {
       okButtonProps={readOnly === true ? { disabled: true } : {}}
     >
       <Form form={form} {...formItemLayout} initialValues={values}>
+        <FormItem
+          label="产品分类"
+          name="category"
+          rules={[
+            {
+              required: true,
+              message: '请输入产品分类',
+            },
+          ]}
+        >
+          <ProductCategorySelect
+            onChange={(value) => {
+              form.setFieldsValue({
+                category: value,
+              });
+            }}
+            placeholder="产品分类"
+          />
+        </FormItem>
         <FormItem
           label="产品系列"
           name="series"

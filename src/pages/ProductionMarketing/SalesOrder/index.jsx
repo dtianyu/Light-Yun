@@ -238,6 +238,11 @@ const TableList = (props) => {
       hideInSearch: true,
     },
     {
+      title: '产品分类',
+      dataIndex: 'formType',
+      hideInTable: true,
+    },
+    {
       title: '公司',
       dataIndex: 'company',
       width: 60,

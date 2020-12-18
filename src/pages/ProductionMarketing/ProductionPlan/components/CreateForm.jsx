@@ -3,6 +3,7 @@ import { Modal, Form, Input, InputNumber, Button, Radio, Select, DatePicker, mes
 import { formatDateTime, local2UTC } from '@/pages/comm';
 import ItemModel from '@/pages/components/ERP/ItemModel';
 import ProductSeriesSelect from '@/pages/ProductionMarketing/components/ProductSeriesSelect';
+import ProductCategorySelect from '@/pages/ProductionMarketing/components/ProductCategorySelect';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -10,7 +11,7 @@ const { TextArea } = Input;
 
 const CreateForm = (props) => {
   const [currentCompany, setCurrentCompany] = useState('C');
-  const [currentCategory, setCurrentCategory] = useState('P');
+  const [currentCategory, setCurrentCategory] = useState('');
   const [currentSeries, setCurrentSeries] = useState('');
   const [itemModelModalVisible, setItemModelModalVisible] = useState(false);
 
@@ -47,7 +48,7 @@ const CreateForm = (props) => {
       return;
     }
     if (series === undefined || series === null || series === '') {
-      message.warning('请先选择产品类别');
+      message.warning('请先选择产品系列');
       return;
     }
     setItemModelModalVisible(true);
@@ -68,7 +69,6 @@ const CreateForm = (props) => {
               ...fieldsValue,
               formdate: local2UTC(fieldsValue.formdate),
               mon: formatDateTime(local2UTC(fieldsValue.formdate), { format: 'YYYYMM' }),
-              formType: currentCategory,
               status: 'N',
             };
             handleAdd(values);
@@ -103,23 +103,44 @@ const CreateForm = (props) => {
             </Select>
           </FormItem>
           <FormItem
-            label="产品类别"
+            label="产品分类"
+            name="formType"
+            rules={[
+              {
+                required: true,
+                message: '请输入产品分类',
+              },
+            ]}
+          >
+            <ProductCategorySelect
+              onChange={(value) => {
+                form.setFieldsValue({
+                  formType: value,
+                });
+                setCurrentCategory(value);
+              }}
+              placeholder="产品分类"
+            />
+          </FormItem>
+          <FormItem
+            label="产品系列"
             name="productSeries"
             rules={[
               {
                 required: true,
-                message: '请输入产品类别',
+                message: '请输入产品系列',
               },
             ]}
           >
             <ProductSeriesSelect
+              category={currentCategory}
               onChange={(value) => {
                 form.setFieldsValue({
                   productSeries: value,
                 });
                 setCurrentSeries(value);
               }}
-              placeholder="产品类别"
+              placeholder="产品系列"
             />
           </FormItem>
           <FormItem label="产品型号" style={{ marginBottom: 0 }} required={true}>
