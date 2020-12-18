@@ -14,6 +14,9 @@ export async function queryList(params) {
   if (params.mon) {
     f = `${f};mon=${params.mon}`;
   }
+  if (params.formType && params.formType !== 'ALL') {
+    f = `${f};formType=${params.formType}`;
+  }
   if (params.productSeries) {
     f = `${f};productSeries=${params.productSeries}`;
   }
@@ -47,7 +50,7 @@ export async function querySummary(params) {
   if (params.mon) {
     f = `${f};mon=${params.mon}`;
   }
-  if (params.formType && params.formType !== '') {
+  if (params.formType && params.formType !== 'ALL') {
     f = `${f};formType=${params.formType}`;
   }
   if (params.productSeries) {
@@ -83,7 +86,7 @@ export async function queryDemand(params) {
   if (params.mon) {
     f = `${f};mon=${params.mon}`;
   }
-  if (params.formType && params.formType !== '') {
+  if (params.formType && params.formType !== 'ALL') {
     f = `${f};formType=${params.formType}`;
   }
   if (params.productSeries) {

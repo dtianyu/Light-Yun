@@ -6,6 +6,7 @@ const UserModel = {
     currentUser: {},
     menuData: [],
     radarData: [],
+    productCategory: 'ALL',
   },
   effects: {
     *fetch(_, { call, put }) {
@@ -26,11 +27,20 @@ const UserModel = {
   },
   reducers: {
     setCurrentUser(state, action) {
+      let category = 'ALL';
+      const user = action.payload.object || {};
+      if (user && user.deptno && user.deptno.substring(0, 2) === '13') {
+        category = 'AJ';
+      }
+      if (user && user.deptno && user.deptno.substring(0, 2) === '1H') {
+        category = 'P';
+      }
       return {
         ...state,
-        currentUser: action.payload.object || {},
+        currentUser: user,
         menuData: action.payload.extData.menu || [],
         radarData: action.payload.extData.radarData || [],
+        productCategory: category,
       };
     },
 

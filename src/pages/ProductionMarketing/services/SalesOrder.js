@@ -4,13 +4,14 @@ import { eapAppToken, formatDateTime } from '@/pages/comm';
 const url = '/jrs/api/eap/salesorder';
 
 export async function queryList(params) {
+  // console.log(params);
   let q = '/pagination';
   let f = '/f';
   let s = '/s';
   if (params.customer) {
     f = `${f};customer=${params.customer}`;
   }
-  if (params.formType) {
+  if (params.formType && params.formType !== 'ALL') {
     f = `${f};formType=${params.formType}`;
   }
   if (params.formid) {

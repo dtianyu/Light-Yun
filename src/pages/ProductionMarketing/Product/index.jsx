@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
+import * as PropTypes from 'prop-types';
 import { connect, history } from 'umi';
 import { DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { Modal, Button, Table, message, Dropdown, Menu } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import * as PropTypes from 'prop-types';
 import CreateForm from '@/pages/ProductionMarketing/Product/components/CreateForm';
 import UpdateForm from '@/pages/ProductionMarketing/Product/components/UpdateForm';
 
@@ -38,6 +38,7 @@ const Product = (props) => {
   const [modalReadOnly, setModalReadOnly] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const [currentParams, setCurrentParams] = useState({});
   const [currentObject, setCurrentObject] = useState({});
 
   const { currentUser, data, extData, total, dispatch, loading } = props;
@@ -61,6 +62,7 @@ const Product = (props) => {
           company: currentCompany,
           current: page,
           pageSize: pageSize,
+          ...currentParams,
         },
       });
       return true;
@@ -89,6 +91,7 @@ const Product = (props) => {
           company: currentCompany,
           current: page,
           pageSize: pageSize,
+          ...currentParams,
         },
       });
       return true;
@@ -118,6 +121,7 @@ const Product = (props) => {
           company: currentCompany,
           current: page,
           pageSize: pageSize,
+          ...currentParams,
         },
       });
       return true;
@@ -288,6 +292,7 @@ const Product = (props) => {
 
   const handleFormSearch = (params) => {
     // console.log(params);
+    setCurrentParams(params);
     if (dispatch) {
       dispatch({
         type: 'productModel/fetchList',
@@ -311,6 +316,7 @@ const Product = (props) => {
           company: currentCompany,
           current: page,
           pageSize: pageSize,
+          ...currentParams,
         },
       });
     } else {

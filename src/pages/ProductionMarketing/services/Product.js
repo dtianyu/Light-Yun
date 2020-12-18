@@ -10,6 +10,9 @@ export async function queryList(params) {
   if (params.company) {
     f = `${f};company=${params.company}`;
   }
+  if (params.category) {
+    f = `${f};category=${params.category}`;
+  }
   if (params.series) {
     f = `${f};series=${params.series}`;
   }

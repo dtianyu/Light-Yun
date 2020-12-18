@@ -16,7 +16,7 @@ const ProductionPlan = (props) => {
 
   const actionRef = useRef(undefined);
 
-  const { currentUser, data, extData, dispatch, loading } = props;
+  const { currentUser, productCategory, data, extData, dispatch, loading } = props;
 
   /**
    * 添加
@@ -144,7 +144,7 @@ const ProductionPlan = (props) => {
         type: 'productionPlanModel/fetchSummary',
         payload: {
           mon: queryMonth,
-          formType: queryFormType,
+          formType: productCategory,
           current: 1,
           pageSize: 2000,
         },
@@ -153,8 +153,14 @@ const ProductionPlan = (props) => {
   }, []);
 
   const handleFormSearch = (params) => {
-    if (params.formType) {
-      setQueryFormType(params.formType);
+    let queryParams;
+    if (productCategory === 'ALL') {
+      queryParams = { ...params };
+      if (params.formType) {
+        setQueryFormType(params.formType);
+      }
+    } else {
+      queryParams = { ...params, formType: productCategory };
     }
     if (params.mon) {
       setQueryMonth(params.mon);
@@ -162,7 +168,7 @@ const ProductionPlan = (props) => {
         dispatch({
           type: 'productionPlanModel/fetchSummary',
           payload: {
-            ...params,
+            ...queryParams,
             current: 1,
             pageSize: 2000,
           },
@@ -250,6 +256,7 @@ const ProductionPlan = (props) => {
 
 export default connect(({ user, productionPlanModel, loading }) => ({
   currentUser: user.currentUser,
+  productCategory: user.productCategory,
   data: productionPlanModel.summaryData,
   extDate: productionPlanModel.extDate,
   loading:

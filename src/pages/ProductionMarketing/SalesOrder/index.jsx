@@ -1,11 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import * as PropTypes from 'prop-types';
 import { connect, history } from 'umi';
 import { DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Menu, message, Modal } from 'antd';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import { queryList, add, update, remove } from '../services/SalesOrder';
 import { utc2Local } from '@/pages/comm';
 import CreateForm from '@/pages/ProductionMarketing/SalesOrder/components/CreateForm';
 import UpdateForm from '@/pages/ProductionMarketing/SalesOrder/components/UpdateForm';
@@ -33,14 +32,18 @@ RowOperation.propTypes = {
   operate: PropTypes.func.isRequired,
 };
 
-const TableList = (props) => {
+const SalesOrder = (props) => {
+  const [currentCompany, setCurrentCompany] = useState('C');
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [modalReadOnly, setModalReadOnly] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [currentParams, setCurrentParams] = useState({});
   const [currentObject, setCurrentObject] = useState({});
   const actionRef = useRef();
 
-  const { currentUser } = props;
+  const { currentUser, productCategory, data, total, dispatch, loading } = props;
 
   /**
    * 添加
@@ -49,20 +52,24 @@ const TableList = (props) => {
   const handleAdd = async (fields) => {
     message.loading('正在添加');
     try {
-      const res = await add({
-        ...fields,
-        creator: currentUser ? currentUser.userid + currentUser.name : '',
+      await dispatch({
+        type: 'salesOrderModel/add',
+        payload: {
+          data: fields,
+        },
       });
-      const { code, msg } = res;
-      if (code < '300') {
-        message.success('添加成功');
-        return true;
-      } else {
-        message.error(msg);
-        return false;
-      }
+      await dispatch({
+        type: 'salesOrderModel/fetchList',
+        payload: {
+          company: currentCompany,
+          current: page,
+          pageSize: pageSize,
+          ...currentParams,
+        },
+      });
+      return true;
     } catch (error) {
-      message.error('添加失败请重试！');
+      message.error('添加失败,请重试！');
       return false;
     }
   };
@@ -74,18 +81,22 @@ const TableList = (props) => {
   const handleUpdate = async (fields) => {
     message.loading('正在更新');
     try {
-      const res = await update({
-        ...fields,
-        optuser: currentUser ? currentUser.userid + currentUser.name : '',
+      await dispatch({
+        type: 'salesOrderModel/update',
+        payload: {
+          data: fields,
+        },
       });
-      const { code, msg } = res;
-      if (code < '300') {
-        message.success('更新成功');
-        return true;
-      } else {
-        message.error(msg);
-        return false;
-      }
+      await dispatch({
+        type: 'salesOrderModel/fetchList',
+        payload: {
+          company: currentCompany,
+          current: page,
+          pageSize: pageSize,
+          ...currentParams,
+        },
+      });
+      return true;
     } catch (error) {
       message.error('更新失败,请重试');
       return false;
@@ -97,18 +108,25 @@ const TableList = (props) => {
    * @param id
    */
   const handleRemove = async (id) => {
-    if (!id) return true;
+    if (!id) return false;
     message.loading('正在删除');
     try {
-      const res = await remove(id);
-      const { code, msg } = res;
-      if (code < '300') {
-        message.success('删除成功');
-        return true;
-      } else {
-        message.error(msg);
-        return false;
-      }
+      await dispatch({
+        type: 'salesOrderModel/remove',
+        payload: {
+          id: id,
+        },
+      });
+      await dispatch({
+        type: 'salesOrderModel/fetchList',
+        payload: {
+          company: currentCompany,
+          current: page,
+          pageSize: pageSize,
+          ...currentParams,
+        },
+      });
+      return true;
     } catch (error) {
       message.error('删除失败,请重试');
       return false;
@@ -413,6 +431,65 @@ const TableList = (props) => {
     },
   ];
 
+  useEffect(() => {
+    if (productCategory) {
+      setCurrentParams({ formType: productCategory });
+    }
+    if (dispatch) {
+      dispatch({
+        type: 'salesOrderModel/fetchList',
+        payload: {
+          company: currentCompany,
+          current: page,
+          pageSize: pageSize,
+          formType: productCategory,
+        },
+      });
+    } else {
+      history.push('/404');
+    }
+  }, []);
+
+  const handleFormSearch = (params) => {
+    // console.log(params);
+    let queryParams;
+    if (productCategory === 'ALL') {
+      queryParams = { ...params };
+    } else {
+      queryParams = { ...params, formType: productCategory };
+    }
+    setCurrentParams(queryParams);
+    if (dispatch) {
+      dispatch({
+        type: 'salesOrderModel/fetchList',
+        payload: {
+          company: currentCompany,
+          current: page,
+          pageSize: pageSize,
+          ...queryParams,
+        },
+      });
+    }
+  };
+
+  const handlePaginationChange = (page, pageSize) => {
+    setPage(page);
+    setPageSize(pageSize);
+    if (dispatch) {
+      dispatch({
+        type: 'salesOrderModel/fetchList',
+        payload: {
+          company: currentCompany,
+          current: page,
+          pageSize: pageSize,
+          ...currentParams,
+        },
+      });
+    } else {
+      history.push('/404');
+    }
+  };
+
   return (
     <PageHeaderWrapper>
       <ProTable
@@ -428,11 +505,16 @@ const TableList = (props) => {
             新建
           </Button>,
         ]}
-        request={(params) => queryList(params)}
         columns={columns}
+        dataSource={data}
         pagination={{
           showSizeChanger: true,
+          total: total,
+          onChange: (page, pageSize) => handlePaginationChange(page, pageSize),
+          onShowSizeChange: (current, size) => handlePaginationChange(current, size),
         }}
+        loading={loading}
+        onSubmit={handleFormSearch}
         scroll={{ x: 2800 }}
         expandable={{
           expandedRowRender: (record) => (
@@ -490,6 +572,10 @@ const TableList = (props) => {
   );
 };
 
-export default connect(({ user }) => ({
+export default connect(({ user, salesOrderModel, loading }) => ({
   currentUser: user.currentUser,
-}))(TableList);
+  productCategory: user.productCategory,
+  data: salesOrderModel.data,
+  total: salesOrderModel.total,
+  loading: loading.effects['salesOrderModel/fetchList'],
+}))(SalesOrder);
